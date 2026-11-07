@@ -1,0 +1,17 @@
+{
+  "name": "Sổ Ghi Chú",
+  "short_name": "Ghi Chú",
+  "description": "Ghi chú và danh sách việc chạy offline, tự ghi giờ tạo và giờ hoàn thành.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F7F5",
+  "theme_color": "#0E7C66",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
