@@ -226,6 +226,27 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 .toggle{display:flex;gap:6px;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 12px}
 .toggle button{flex:1;padding:9px 6px;border-radius:9px;font-size:13.5px}
 .toggle button.on{background:var(--card);font-weight:600;box-shadow:var(--shadow)}
+/* selection mode */
+.selbar{position:fixed;top:0;left:0;right:0;z-index:9;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px}
+.selbar b{flex:1;font-size:17px}
+.selbar .txt{padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.2);font-weight:600;font-size:14px;color:inherit}
+.selact{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 8px calc(8px + var(--safe-b))}
+.selact.ed{position:static;flex:none}
+.selact button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;min-width:66px;padding:4px 0;border-radius:10px}
+.selact button:active{background:var(--soft)}
+.selact button.dan{color:var(--danger)}
+.selact button:disabled{opacity:.35}
+.card{position:relative}
+.card .tick{display:none;position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:2px solid var(--faint);background:var(--card);box-sizing:border-box}
+body.selecting .card .tick{display:block}
+body.selecting .card h3,body.selecting .card .badge{margin-right:26px}
+.card.sel{box-shadow:0 0 0 3px var(--accent)}
+.card.sel .tick{background:var(--accent) no-repeat center/14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E");border-color:var(--accent)}
+body.selecting .fab,body.selecting .nav{display:none!important}
+body.selecting .view{padding-top:56px}
+#ed.selmode{caret-color:transparent;-webkit-user-select:none;user-select:none}
+#ed.selmode > div{border-radius:8px;cursor:pointer}
+#ed.selmode > div.picked{background:var(--accent-soft);box-shadow:inset 4px 0 0 var(--accent)}
 .toast{position:fixed;left:50%;bottom:calc(150px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:86vw;text-align:center}
 .toast.show{opacity:1}
 .scrim:not(.hidden) ~ .toast{bottom:auto;top:calc(16px + env(safe-area-inset-top,0px))}
@@ -238,9 +259,12 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
   <div class="top">
     <div class="toprow">
       <div><div class="date" id="today"></div><h1>Sổ tay Mr TOÀN</h1></div>
+      <div style="display:flex;gap:8px">
+      <button class="ib solid" id="btnSelect" aria-label="Chọn nhiều ghi chú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><path d="M4.5 6.5l1.2 1.2 2.4-2.6M14 6.5h7M3 14h7v7H3zM14 17.5h7"/></svg></button>
       <button class="ib solid" id="btnSettings" aria-label="Cài đặt và sao lưu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
       </button>
+      </div>
     </div>
     <label class="search">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -275,6 +299,17 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
   <div id="logList"></div>
 </section>
 
+<div class="selbar hidden" id="selTop">
+  <button class="ib" id="selClose" aria-label="Thoát chế độ chọn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <b id="selCount">Chọn ghi chú</b>
+  <button class="txt" id="selAll">Chọn tất cả</button>
+</div>
+<div class="selact hidden" id="selBottom">
+  <button id="selPin"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM12 13v8"/></svg><span>Ghim</span></button>
+  <button id="selColor"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/></svg><span>Đổi màu</span></button>
+  <button id="selCopy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg><span>Sao chép</span></button>
+  <button id="selDel" class="dan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Xoá</span></button>
+</div>
 <nav class="nav" id="nav">
   <button class="on" data-v="notes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h4"/></svg>Ghi chú</button>
   <button data-v="tasks"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l2 2 4-4M4 16l2 2 4-4M14 7h7M14 16h7"/></svg>Việc làm</button>
@@ -304,6 +339,12 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
     <span class="pulse"></span>
     <div class="vt"><b>Đang nghe… hãy nói tiếng Việt</b><span id="vInterim">Nói xong bấm Dừng</span></div>
     <button id="vStop">Dừng</button>
+  </div>
+  <div class="selact ed hidden" id="edSel">
+    <button id="esAll"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg><span>Chọn tất cả</span></button>
+    <button id="esDone"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L18 6M11 16l1 1L23 6"/></svg><span>Đã xong</span></button>
+    <button id="esTodo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/></svg><span>Chưa làm</span></button>
+    <button id="esDel" class="dan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Xoá</span></button>
   </div>
   <div class="tools" id="tools">
     <div class="subrow hidden" id="rowColor">
@@ -608,6 +649,17 @@ $("scrim").addEventListener("click", e => {
   if (keep !== true) closeSheet();
 });
 
+/* ask before anything destructive */
+function confirmSheet(title, body, okLabel, onOk){
+  openSheet(`<h4>${title}</h4><p>${body}</p><div class="row2"><button class="btn" data-a="x">Huỷ</button><button class="btn dan" data-a="ok">${okLabel}</button></div>`,
+    a => { if (a === "ok") onOk(); });
+}
+/* close the sheet but keep its history entry for a new layer (no back() race) */
+function sheetToLayer(name){
+  $("scrim").classList.add("hidden"); sheetCb = null;
+  const i = layers.lastIndexOf("sheet"); if (i >= 0) layers[i] = name; else pushLayer(name);
+}
+
 /* back-button layers */
 const layers = [];
 function pushLayer(n){ layers.push(n); history.pushState({l:layers.length}, ""); }
@@ -617,6 +669,8 @@ window.addEventListener("popstate", () => {
   if (ignorePop){ ignorePop--; return; }
   const top = layers.pop();
   if (top === "sheet") closeSheet(true);
+  else if (top === "select") exitSel(true);
+  else if (top === "edsel") exitEdSel(true);
   else if (top === "editor") closeEditor(true);
 });
 
@@ -663,7 +717,7 @@ function card(n){
   const badge = s.doing ? '<span class="badge doing">Đang làm</span>' : (s.total && s.done===s.total ? '<span class="badge done">Đã xong</span>' : "");
   const pv = (n.pv||[]).map(l => l.s ? `<span class="${l.s==="done"?"x":""}">${"    ".repeat(l.l||0)}${boxChar(l.s)}${esc(l.t)}</span>` : esc(l.t)).join("\n");
   const prog = s.total ? `<span class="bar"><i style="width:${Math.round(s.done/s.total*100)}%"></i></span><span>${s.done}/${s.total}</span>` : `<span style="flex:1">${when(n.updated)}</span>`;
-  return `<button class="card" data-id="${n.id}" data-c="${n.color}" style="background:var(--n-${n.color})">${badge}${n.title.trim()?`<h3>${esc(n.title)}</h3>`:""}${pv?`<div class="pv">${pv}</div>`:""}<div class="ft">${prog}${n.pinned?'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM11 13h2v8h-2z"/></svg>':""}</div></button>`;
+  return `<button class="card${selMode && picked.has(n.id) ? " sel" : ""}" data-id="${n.id}" data-c="${n.color}" style="background:var(--n-${n.color})"><span class="tick"></span>${badge}${n.title.trim()?`<h3>${esc(n.title)}</h3>`:""}${pv?`<div class="pv">${pv}</div>`:""}<div class="ft">${prog}${n.pinned?'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM11 13h2v8h-2z"/></svg>':""}</div></button>`;
 }
 function renderNotes(all){
   const q = $("q").value.trim().toLowerCase();
@@ -683,8 +737,82 @@ function renderNotes(all){
     if (rest.length) h += (pin.length?`<div class="sec">Khác</div>`:"") + `<div class="grid">${rest.map(card).join("")}</div>`;
   }
   $("list").innerHTML = h;
+  if (selMode) renderSel();
 }
-$("list").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openEditor(c.dataset.id); });
+let longFired = false, pressT = null;
+$("list").addEventListener("click", e => {
+  const c = e.target.closest(".card"); if (!c) return;
+  if (longFired){ longFired = false; return; }
+  if (selMode){ togglePick(c.dataset.id); return; }
+  openEditor(c.dataset.id);
+});
+$("list").addEventListener("touchstart", e => {
+  const c = e.target.closest(".card"); if (!c) return;
+  const t = e.touches[0]; longFired = false;
+  pressT = {x:t.clientX, y:t.clientY, timer:setTimeout(() => {
+    longFired = true; pressT = null;
+    if (navigator.vibrate) try{ navigator.vibrate(25); }catch(err){}
+    if (!selMode) enterSel(c.dataset.id); else togglePick(c.dataset.id);
+  }, 480)};
+}, {passive:true});
+$("list").addEventListener("touchmove", e => { if (!pressT) return; const t = e.touches[0]; if (Math.abs(t.clientX-pressT.x) > 10 || Math.abs(t.clientY-pressT.y) > 10){ clearTimeout(pressT.timer); pressT = null; } }, {passive:true});
+$("list").addEventListener("touchend", () => { if (pressT){ clearTimeout(pressT.timer); pressT = null; } });
+$("list").addEventListener("contextmenu", e => { if (e.target.closest(".card")) e.preventDefault(); });
+
+/* ---------- select one / many / all notes ---------- */
+let selMode = false; const picked = new Set();
+function enterSel(id){
+  if (selMode) return;
+  selMode = true; picked.clear(); if (id) picked.add(id);
+  document.body.classList.add("selecting");
+  $("selTop").classList.remove("hidden"); $("selBottom").classList.remove("hidden");
+  pushLayer("select"); render();
+}
+function exitSel(viaPop){
+  if (!selMode) return;
+  selMode = false; picked.clear();
+  document.body.classList.remove("selecting");
+  $("selTop").classList.add("hidden"); $("selBottom").classList.add("hidden");
+  if (!viaPop) popLayer("select");
+  render();
+}
+function togglePick(id){ if (picked.has(id)) picked.delete(id); else picked.add(id); renderSel(); }
+function visibleIds(){ return [...$("list").querySelectorAll(".card")].map(c => c.dataset.id); }
+function renderSel(){
+  const vis = visibleIds();
+  [...picked].forEach(id => { if (!notes[id] || notes[id].del) picked.delete(id); });
+  $("selCount").textContent = picked.size ? "Đã chọn " + picked.size : "Chạm để chọn";
+  $("selAll").textContent = vis.length && vis.every(id => picked.has(id)) ? "Bỏ chọn hết" : "Chọn tất cả";
+  $("list").querySelectorAll(".card").forEach(c => c.classList.toggle("sel", picked.has(c.dataset.id)));
+  ["selPin","selColor","selCopy","selDel"].forEach(id => $(id).disabled = !picked.size);
+  const allPinned = picked.size && [...picked].every(id => notes[id].pinned);
+  $("selPin").querySelector("span").textContent = allPinned ? "Bỏ ghim" : "Ghim";
+}
+$("btnSelect").onclick = () => enterSel(null);
+$("selClose").onclick = () => exitSel(false);
+$("selAll").onclick = () => { const vis = visibleIds(); if (vis.every(id => picked.has(id))) picked.clear(); else vis.forEach(id => picked.add(id)); renderSel(); };
+$("selPin").onclick = () => {
+  const ids = [...picked], pin = !ids.every(id => notes[id].pinned);
+  ids.forEach(id => { notes[id].pinned = pin; });
+  saveNotes(); render(); toast((pin ? "Đã ghim " : "Đã bỏ ghim ") + ids.length + " ghi chú");
+};
+$("selColor").onclick = () => {
+  openSheet(`<h4>Đổi màu ${picked.size} ghi chú</h4><div class="colors">${COLORS.map(c => `<button data-a="${c}" style="background:var(--n-${c})" aria-label="Màu ${c}"></button>`).join("")}</div>`,
+    c => { if (!COLORS.includes(c)) return; picked.forEach(id => { notes[id].color = c; }); saveNotes(); render(); toast("Đã đổi màu"); });
+};
+$("selCopy").onclick = () => {
+  const ids = [...picked].sort((a, b) => notes[b].updated - notes[a].updated);
+  copyText(ids.map(id => plainOf(notes[id])).join("\n\n— — —\n\n"));
+};
+$("selDel").onclick = () => {
+  const ids = [...picked]; if (!ids.length) return;
+  const names = ids.slice(0, 3).map(id => "<b>" + esc(notes[id].title || (notes[id].text||"").split("\n")[0] || "Không tiêu đề") + "</b>").join(", ") + (ids.length > 3 ? " và " + (ids.length - 3) + " ghi chú khác" : "");
+  confirmSheet(`Xoá ${ids.length} ghi chú?`, `${names}.<br>Các ghi chú sẽ vào <b>Thùng rác</b> và khôi phục được trong 30 ngày.`, `Xoá ${ids.length} ghi chú`, () => {
+    const now = Date.now();
+    ids.forEach(id => { notes[id].del = now; logEv("del", id, ""); });
+    saveNotes(); exitSel(false); toast(`Đã chuyển ${ids.length} ghi chú vào thùng rác`);
+  });
+};
 
 /* ---------- tasks view ---------- */
 function allItems(all){
@@ -837,6 +965,7 @@ function placeCaretEnd(el){
 }
 function closeEditor(viaPop){
   if (!cur) return;
+  if (edSel){ edSel = false; ed.contentEditable = "true"; ed.classList.remove("selmode"); $("tools").classList.remove("hidden"); $("edSel").classList.add("hidden"); ed.querySelectorAll(".picked").forEach(x => x.classList.remove("picked")); const i = layers.lastIndexOf("edsel"); if (i >= 0) layers.splice(i, 1); }
   stopVoice();
   flush();
   const n = notes[cur];
@@ -848,7 +977,7 @@ function closeEditor(viaPop){
   if (!viaPop) popLayer("editor");
   ed.blur(); render();
 }
-$("eBack").onclick = () => closeEditor(false);
+$("eBack").onclick = () => { if (edSel) exitEdSel(false); else closeEditor(false); };
 
 /* top-level blocks */
 function normalizeTop(){
@@ -991,7 +1120,12 @@ function flush(){
   clearTimeout(saveT);
   if (!cur) return;
   const n = notes[cur]; if (!n) return;
-  const html = ed.innerHTML, title = $("title").value;
+  let html = ed.innerHTML; const title = $("title").value;
+  if (ed.querySelector(".picked,.dragging")){
+    const c = ed.cloneNode(true);
+    c.querySelectorAll(".picked,.dragging").forEach(x => { x.classList.remove("picked","dragging"); if (!x.className) x.removeAttribute("class"); });
+    html = c.innerHTML;
+  }
   const snap = title + "\u0000" + html;
   if (snap !== lastSnap){
     const first = !n.saved;
@@ -1062,6 +1196,7 @@ function holdStart(b, x, y){
 function holdCancel(){ if (tapStart){ clearTimeout(tapStart.timer); tapStart = null; } }
 
 ed.addEventListener("touchstart", e => {
+  if (edSel) return;
   const t = e.touches[0]; const b = zoneHit(t.clientX, t.clientY, e.target);
   if (b){ e.preventDefault(); swipe = null; holdStart(b, t.clientX, t.clientY); return; }
   const row = e.target.closest ? e.target.closest("#ed > div") : null;
@@ -1089,7 +1224,7 @@ document.addEventListener("touchend", e => { if (drag){ e.preventDefault(); endD
 document.addEventListener("touchcancel", () => { holdCancel(); if (drag) endDrag(false); });
 /* mouse (computer) */
 ed.addEventListener("mousedown", e => {
-  if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
+  if (edSel || (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents)) return;
   const b = zoneHit(e.clientX, e.clientY, e.target); if (!b) return;
   e.preventDefault(); holdStart(b, e.clientX, e.clientY);
 });
@@ -1177,6 +1312,69 @@ function endDrag(apply){
   afterEdit();
   if (moved){ toast(d.group.length > 1 ? `Đã chuyển cả nhóm ${d.group.length} việc` : "Đã chuyển vị trí"); if (navigator.vibrate) try{ navigator.vibrate(12); }catch(e){} }
 }
+
+/* ---------- select many lines inside a note ---------- */
+let edSel = false;
+function enterEdSel(layerReady){
+  flush(); stopVoice(); hideRows();
+  edSel = true; ed.blur();
+  ed.contentEditable = "false"; ed.classList.add("selmode");
+  $("tools").classList.add("hidden"); $("edSel").classList.remove("hidden");
+  if (!layerReady) pushLayer("edsel");
+  renderEdSel();
+}
+function exitEdSel(viaPop){
+  if (!edSel) return;
+  edSel = false;
+  ed.querySelectorAll(".picked").forEach(x => { x.classList.remove("picked"); if (!x.className) x.removeAttribute("class"); });
+  ed.contentEditable = "true"; ed.classList.remove("selmode");
+  $("tools").classList.remove("hidden"); $("edSel").classList.add("hidden");
+  if (!viaPop) popLayer("edsel");
+  $("eStatus").textContent = "Đã lưu · " + hm(notes[cur] ? notes[cur].updated : Date.now());
+}
+function pickedRows(withKids){
+  const rows = [...ed.children], out = new Set();
+  rows.forEach((r, i) => { if (r.classList.contains("picked")){ out.add(r); if (withKids && isCk(r)) descOf(rows, i).forEach(d => out.add(d)); } });
+  return rows.filter(r => out.has(r));
+}
+function renderEdSel(){
+  const n = ed.querySelectorAll(":scope > .picked").length, total = ed.children.length;
+  $("eStatus").textContent = n ? "Đã chọn " + n + " dòng" : "Chạm vào dòng để chọn";
+  $("esAll").querySelector("span").textContent = n && n === total ? "Bỏ chọn hết" : "Chọn tất cả";
+  ["esDone","esTodo","esDel"].forEach(id => $(id).disabled = !n);
+}
+ed.addEventListener("click", e => {
+  if (!edSel) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  const row = e.target.closest ? e.target.closest("#ed > div") : null; if (!row) return;
+  const on = !row.classList.contains("picked");
+  const rows = [...ed.children];
+  [row, ...(isCk(row) ? descOf(rows, rows.indexOf(row)) : [])].forEach(r => r.classList.toggle("picked", on));
+  renderEdSel();
+}, true);
+$("esAll").onclick = () => { const all = [...ed.children], on = !all.every(r => r.classList.contains("picked")); all.forEach(r => r.classList.toggle("picked", on)); renderEdSel(); };
+function bulkStatus(target){
+  const rows = [...ed.children], list = pickedRows(target === "done").filter(isCk);
+  let n = 0;
+  list.forEach(r => { const s = r.dataset.s || "todo"; if (s !== target){ applyStatus(r, target, cur); delete r.dataset.f; n++; } });
+  syncParents(rows, cur); ensureOrder(rows); sinkDone(ed); markTree([...ed.children]);
+  ed.querySelectorAll(".picked").forEach(x => x.classList.remove("picked"));
+  renderEdSel(); refreshMeta(); flush(); scheduleTree();
+  toast(n ? (target === "done" ? `Đã đánh dấu xong ${n} việc lúc ${hm(Date.now())}` : `Đã chuyển ${n} việc về chưa làm`) : "Không có việc nào cần đổi");
+}
+$("esDone").onclick = () => bulkStatus("done");
+$("esTodo").onclick = () => bulkStatus("todo");
+$("esDel").onclick = () => {
+  const list = pickedRows(true); if (!list.length) return;
+  const sel = ed.querySelectorAll(":scope > .picked").length, kids = list.length - sel;
+  const preview = list.slice(0, 3).map(r => "<b>" + esc(itemText(r).slice(0, 40) || "(dòng trống)") + "</b>").join(", ") + (list.length > 3 ? "…" : "");
+  confirmSheet(`Xoá ${list.length} dòng?`, `${preview}${kids > 0 ? `<br>Đã gồm ${kids} việc con nằm bên trong.` : ""}<br><b>Không khôi phục được</b> sau khi xoá.`, `Xoá ${list.length} dòng`, () => {
+    list.forEach(r => r.remove());
+    if (!ed.children.length) ed.innerHTML = "<div><br></div>";
+    fixItems(); refreshMeta(); flush(); renderEdSel();
+    toast(`Đã xoá ${list.length} dòng`);
+  });
+};
 
 function cycleLive(b){
   flush();
@@ -1307,15 +1505,20 @@ $("eMore").onclick = () => {
     <button class="opt" data-a="copy"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></span><span>Sao chép nội dung<small>Để dán vào Zalo, Messenger…</small></span></button>
     <button class="opt" data-a="share"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></span><span>Chia sẻ</span></button>
     <button class="opt" data-a="tpl"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5zM9 8h6M9 12h6"/></svg></span><span>Lưu làm mẫu<small>Lần sau tạo nhanh ghi chú giống thế này</small></span></button>
+    <button class="opt" data-a="msel"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><path d="M4.5 6.5l1.2 1.2 2.4-2.6M14 6.5h7M3 14h7v7H3zM14 17.5h7"/></svg></span><span>Chọn nhiều dòng<small>Đánh dấu xong, chưa làm hoặc xoá nhiều việc cùng lúc</small></span></button>
     <button class="opt danger" data-a="del"><span class="ic" style="color:var(--danger)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><span>Xoá ghi chú<small>Chuyển vào thùng rác, khôi phục được trong 30 ngày</small></span></button>`,
   (a) => {
     if (a.startsWith("color:")){ n.color = a.slice(6); n.updated = Date.now(); saveNotes(); $("editor").dataset.c = n.color; }
     else if (a==="copy") copyText(plainOf(n));
     else if (a==="share"){ const text = plainOf(n); if (navigator.share) navigator.share({title:n.title||"Ghi chú", text}).catch(()=>{}); else copyText(text); }
     else if (a==="tpl"){ askTemplateName(n); return true; }
+    else if (a==="msel"){ sheetToLayer("edsel"); enterEdSel(true); }
     else if (a==="del"){
-      n.del = Date.now(); logEv("del", cur, ""); saveNotes();
-      closeEditor(false); toast("Đã chuyển vào thùng rác");
+      confirmSheet("Xoá ghi chú này?", `<b>${esc(n.title || (n.text||"").split("\n")[0] || "Không tiêu đề")}</b> sẽ vào <b>Thùng rác</b>, khôi phục được trong 30 ngày.`, "Xoá ghi chú", () => {
+        n.del = Date.now(); logEv("del", cur, ""); saveNotes();
+        closeEditor(false); toast("Đã chuyển vào thùng rác");
+      });
+      return true;
     }
   });
 };
@@ -1449,8 +1652,25 @@ function openTrash(){
   Object.keys(notes).forEach(id => { if (notes[id].del && now - notes[id].del > 30*DAY) delete notes[id]; });
   saveNotes();
   const list = Object.entries(notes).filter(([,n]) => n.del).sort((a,b)=>b[1].del-a[1].del);
-  openSheet(`<h4>Thùng rác</h4><p>Ghi chú tự xoá hẳn sau 30 ngày.</p>` + (list.length ? list.map(([id,n]) => `<div style="display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--soft)"><div style="flex:1;min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(n.title||n.text.split("\n")[0]||"Không tiêu đề")}</div><small style="color:var(--muted)">Xoá ${when(n.del)}</small></div><button class="btn" style="flex:none;padding:9px 12px" data-a="res:${id}">Khôi phục</button></div>`).join("") : `<div class="empty">Thùng rác trống</div>`),
-  a => { if (a.startsWith("res:")){ const n = notes[a.slice(4)]; if (n){ delete n.del; n.updated = Date.now(); saveNotes(); render(); toast("Đã khôi phục"); } openTrash(); return true; } });
+  const nm = n => esc(n.title || (n.text||"").split("\n")[0] || "Không tiêu đề");
+  openSheet(`<h4>Thùng rác</h4><p>Ghi chú tự xoá hẳn sau 30 ngày.</p>` + (list.length ? `
+    <div class="row2" style="margin:0 0 10px"><button class="btn" data-a="resall">Khôi phục tất cả (${list.length})</button><button class="btn" style="color:var(--danger)" data-a="purgeall">Xoá hẳn tất cả</button></div>` +
+    list.map(([id,n]) => `<div style="display:flex;align-items:center;gap:6px;padding:8px 4px;border-bottom:1px solid var(--soft)"><div style="flex:1;min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nm(n)}</div><small style="color:var(--muted)">Xoá ${when(n.del)}</small></div><button class="btn" style="flex:none;padding:9px 12px" data-a="res:${id}">Khôi phục</button><button class="ib" style="color:var(--danger)" data-a="purge:${id}" aria-label="Xoá hẳn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>`).join("") : `<div class="empty">Thùng rác trống</div>`),
+  a => {
+    if (a.startsWith("res:")){ const n = notes[a.slice(4)]; if (n){ delete n.del; n.updated = Date.now(); saveNotes(); render(); toast("Đã khôi phục"); } openTrash(); return true; }
+    if (a === "resall"){ list.forEach(([,n]) => { delete n.del; n.updated = Date.now(); }); saveNotes(); render(); toast(`Đã khôi phục ${list.length} ghi chú`); openTrash(); return true; }
+    if (a.startsWith("purge:")){
+      const id = a.slice(6), n = notes[id]; if (!n) return true;
+      openSheet(`<h4>Xoá hẳn ghi chú?</h4><p><b>${nm(n)}</b> sẽ bị xoá vĩnh viễn, <b>không khôi phục được</b>.</p><div class="row2"><button class="btn" data-a="back">Huỷ</button><button class="btn dan" data-a="ok">Xoá hẳn</button></div>`,
+        b => { if (b === "ok"){ delete notes[id]; saveNotes(); toast("Đã xoá hẳn"); } openTrash(); return true; });
+      return true;
+    }
+    if (a === "purgeall"){
+      openSheet(`<h4>Xoá hẳn ${list.length} ghi chú?</h4><p>Toàn bộ thùng rác sẽ bị xoá vĩnh viễn, <b>không khôi phục được</b>.</p><div class="row2"><button class="btn" data-a="back">Huỷ</button><button class="btn dan" data-a="ok">Xoá hẳn ${list.length} ghi chú</button></div>`,
+        b => { if (b === "ok"){ list.forEach(([id]) => delete notes[id]); saveNotes(); toast(`Đã xoá hẳn ${list.length} ghi chú`); } openTrash(); return true; });
+      return true;
+    }
+  });
 }
 function backupData(){ return JSON.stringify({app:"so-ghi-chu", v:1, exported:Date.now(), notes, events, templates:tpls}); }
 function backupName(){ const d = new Date(); return `so-ghi-chu-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.json`; }
