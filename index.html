@@ -140,11 +140,11 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 .meta span{font-size:12px;color:var(--muted);background:rgba(127,127,127,.12);border-radius:8px;padding:4px 8px}
 .meta span.doing{background:var(--doing-soft);color:var(--doing-text);font-weight:600}
 .meta span.done{background:var(--accent-soft);color:var(--accent-text);font-weight:600}
-#ed{outline:0;min-height:50vh;font-size:16.5px;line-height:1.42;word-break:break-word;caret-color:var(--accent)}
+#ed{outline:0;min-height:50vh;font-size:16.5px;line-height:1.35;word-break:break-word;caret-color:var(--accent)}
 #ed:empty::before{content:attr(data-ph);color:var(--faint)}
-#ed>div{min-height:1.42em}
+#ed>div{min-height:1.35em}
 #ed .sz-s{font-size:13.5px} #ed .sz-l{font-size:21px} #ed .sz-h{font-size:25px;font-weight:700;line-height:1.35}
-#ed .ck{position:relative;padding:3px 0 4px 34px}
+#ed .ck{position:relative;padding:3px 0 3px 34px;line-height:1.3}
 #ed :where(.ck){font-size:var(--l0-size);font-weight:var(--l0-w);color:var(--l0-c)}
 #ed :where(.ck[data-l="1"]){font-size:var(--l1-size);font-weight:var(--l1-w);color:var(--l1-c)}
 #ed :where(.ck[data-l="2"]){font-size:var(--l2-size);font-weight:var(--l2-w);color:var(--l2-c)}
@@ -152,14 +152,17 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 #ed .ck[data-l="1"]{padding-left:62px} #ed .ck[data-l="2"]{padding-left:90px}
 #ed .ck[data-k="p"]{padding-right:38px}
 #ed > [data-h]{display:none}
-#ed .ck::before{content:"";position:absolute;left:0;top:calc(3px + .71em - 11px);width:22px;height:22px;border-radius:6px;border:2px solid var(--faint);box-sizing:border-box;background-color:var(--card)}
+#ed .ck::before{content:"";position:absolute;left:0;top:calc(3px + .65em - 11px);width:22px;height:22px;border-radius:6px;border:2px solid var(--faint);box-sizing:border-box;background-color:var(--card)}
 #ed .ck[data-l="1"]::before{left:28px} #ed .ck[data-l="2"]::before{left:56px}
 #ed .ck[data-s="doing"]::before{border-color:var(--doing);background:var(--card) linear-gradient(var(--doing),var(--doing)) center/8px 8px no-repeat}
 #ed .ck[data-s="done"]::before{border:0;background:var(--accent) no-repeat center/14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")}
 #ed .ck[data-s="done"]{color:var(--muted);text-decoration:line-through}
-#ed .ck::after{content:attr(data-m);display:inline-block;width:100%;font-size:11.5px;line-height:1.25;margin-top:0;font-weight:400;font-style:normal;color:var(--muted);user-select:none;-webkit-user-select:none}
-#ed .ck[data-s="doing"]::after{color:var(--doing-text)}
-#ed .ck[data-s="done"]::after{color:var(--accent-text)}
+#ed .ck::after{content:attr(data-q);display:inline-block;margin-left:6px;padding:0 6px;border-radius:6px;font-size:11px;line-height:17px;vertical-align:1px;font-weight:500;font-style:normal;text-decoration:none;color:var(--muted);background:rgba(127,127,127,.12);user-select:none;-webkit-user-select:none;white-space:nowrap}
+#ed .ck[data-s="doing"]::after{color:var(--doing-text);background:var(--doing-soft);font-weight:600}
+#ed .ck[data-s="done"]::after{color:var(--accent-text);background:var(--accent-soft)}
+#ed .ck:not([data-q])::after,#ed .ck[data-q=""]::after{display:none}
+#ed.times .ck::after{content:attr(data-m);display:inline-block;white-space:normal}
+#ed.times .ck[data-m=""]::after{display:none}
 .einner{position:relative}
 #tree{position:absolute;inset:0;pointer-events:none}
 #tree i{position:absolute;background:var(--tree);border-radius:1px}
@@ -312,6 +315,7 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
       <button class="sw" data-cmd="italic" aria-label="In nghiêng"><i style="font-style:italic;font-family:Georgia,serif;font-size:17px;width:auto;height:auto">I</i></button>
       <button class="sw" data-cmd="underline" aria-label="Gạch chân"><span style="text-decoration:underline">U</span></button>
       <button class="sw" data-cmd="strikeThrough" aria-label="Gạch ngang"><span style="text-decoration:line-through">S</span></button>
+      <button class="sw" data-t="smaller" aria-label="Chữ nhỏ hơn">A−</button>
       <button class="sw" data-cmd="clear">Bỏ định dạng</button>
       <button class="sw" data-t="time">Chèn giờ hiện tại</button>
     </div>
@@ -327,7 +331,7 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
       <button class="tb" data-t="indent" aria-label="Thụt vào thành việc con"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H11M21 12H11M21 18H11M4 9l3 3-3 3"/></svg></button>
       <button class="tb" data-t="bold" aria-label="In đậm"><b>B</b></button>
       <button class="tb" data-t="bigger" aria-label="Chữ to hơn"><span style="font-weight:600">A<sup style="font-size:11px">+</sup></span></button>
-      <button class="tb" data-t="smaller" aria-label="Chữ nhỏ hơn"><span style="font-size:15px">A<sup style="font-size:10px">−</sup></span></button>
+      <button class="tb" data-t="times" id="btnTimes" aria-label="Hiện hoặc ẩn giờ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
       <button class="tb" data-t="fmt" aria-label="Cỡ chữ, màu và kiểu chữ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 21h8"/></svg></button>
       <button class="tb mic" data-t="mic" aria-label="Nhập bằng giọng nói"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     </div>
@@ -373,6 +377,7 @@ function applyLv(){
   set("f", settings.flat);
 }
 applyLv();
+function applyTimes(){ const e = document.getElementById("ed"), b = document.getElementById("btnTimes"); if (e) e.classList.toggle("times", !!settings.showTimes); if (b) b.classList.toggle("on", !!settings.showTimes); if (typeof scheduleTree === "function" && cur) scheduleTree(); }
 let persisted = false;
 (async()=>{ try{ if (navigator.storage && navigator.storage.persist){ persisted = await navigator.storage.persisted() || await navigator.storage.persist(); } }catch(e){} })();
 
@@ -429,6 +434,9 @@ function markTree(rows){
     if (kids.length) el.dataset.k = "p"; else { delete el.dataset.k; delete el.dataset.x; }
     if (!hidden && kids.length && el.dataset.x === "1") hideL = L;
     const m = itemMeta(el, kids); if (el.dataset.m !== m) el.dataset.m = m;
+    const q = [kids.length ? kids.filter(k => k.dataset.s==="done").length + "/" + kids.length : "",
+               el.dataset.s === "doing" && +el.dataset.b ? (Date.now() - +el.dataset.b < 60000 ? "vừa bắt đầu" : dur(Date.now() - +el.dataset.b)) : ""].filter(Boolean).join(" · ");
+    if (el.dataset.q !== q) el.dataset.q = q;
   });
 }
 /* parent follows its children: all done -> done, some started -> doing */
@@ -540,7 +548,7 @@ function sanitize(html){
           const keep = OK_STYLE.map(p => { const v = n.style.getPropertyValue(p); return v && !/url|expression/i.test(v) ? p+":"+v : ""; }).filter(Boolean).join(";");
           keep ? n.setAttribute("style", keep) : n.removeAttribute("style");
         }
-        else if (/^data-(s|c|b|d|id|m|l|k|x|h|f|o)$/.test(nm)){
+        else if (/^data-(s|c|b|d|id|m|l|k|x|h|f|o|q)$/.test(nm)){
           const v = a.value;
           if ((nm==="data-s" && !/^(todo|doing|done)$/.test(v)) || (/^data-(c|b|d)$/.test(nm) && !/^\d{0,15}$/.test(v)) || (nm==="data-l" && !/^[0-2]$/.test(v)) || (nm==="data-k" && v!=="p") || (/^data-(x|h|f)$/.test(nm) && v!=="1") || (nm==="data-id" && !/^[a-z0-9]{1,40}$/i.test(v)) || (nm==="data-o" && !/^-?\d+(\.\d+)?(e-?\d+)?$/.test(v))) n.removeAttribute(nm);
         }
@@ -883,7 +891,7 @@ function fixItems(){
   const rows = [...ed.children].filter(r => r.tagName === "DIV"), fresh = new Set();
   let maxL = -1;
   rows.forEach(el => {
-    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m","l","k","x","h","f","o"].forEach(k => { if (el.dataset[k] !== undefined) delete el.dataset[k]; }); prevL = -1; return; }
+    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m","l","k","x","h","f","o","q"].forEach(k => { if (el.dataset[k] !== undefined) delete el.dataset[k]; }); prevL = -1; return; }
     if (!el.dataset.id || seen.has(el.dataset.id)){
       el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","x","f","h"].forEach(k => delete el.dataset[k]); fresh.add(el);
     }
@@ -934,7 +942,7 @@ function drawTree(){
     const r = el.getBoundingClientRect(), L = lv(el);
     const top = r.top - base.top, left = r.left - base.left;
     const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
-    const cx = left + L*28 + 11, cy = top + 3 + 0.71*fs;
+    const cx = left + L*28 + 11, cy = top + 3 + 0.65*fs;
     while (stack.length && stack[stack.length-1].l >= L) stack.pop();
     const p = stack[stack.length-1];
     if (L > 0 && p && p.l === L-1){
@@ -947,6 +955,20 @@ function drawTree(){
   box.innerHTML = h;
 }
 window.addEventListener("resize", scheduleTree);
+applyTimes();
+/* tap just after a task's text (where the time label sits) -> show its full times */
+function chipHit(x, y, target){
+  const row = target && target.closest ? target.closest("#ed > .ck") : null; if (!row) return null;
+  const r = document.createRange(); r.selectNodeContents(row);
+  const rects = [...r.getClientRects()].filter(q => q.width > 0);
+  if (!rects.length) return null;
+  const last = rects[rects.length-1];
+  return (y >= last.top - 3 && y <= last.bottom + 3 && x > last.right + 2) ? row : null;
+}
+ed.addEventListener("click", e => {
+  const row = chipHit(e.clientX, e.clientY, e.target);
+  if (row && row.dataset.m){ const t = $("toast"); t.textContent = itemText(row).slice(0, 40) + (itemText(row).length > 40 ? "…" : "") + "\n" + row.dataset.m; t.style.whiteSpace = "pre-line"; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => { t.classList.remove("show"); t.style.whiteSpace = ""; }, 4000); }
+});
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleTree);
 
 function refreshMeta(full){
@@ -1030,7 +1052,7 @@ function zoneHit(x, y, target){
   const r = b.getBoundingClientRect();
   const dx = x - r.left - lv(b)*28;
   const fs = parseFloat(getComputedStyle(b).fontSize) || 16;
-  return (dx > -6 && dx < 34 && y - r.top < 3 + 1.42*fs + 6) ? b : null;
+  return (dx > -6 && dx < 34 && y - r.top < 3 + 1.3*fs + 6) ? b : null;
 }
 let tapStart = null, swipe = null, suppressClick = false;
 const HOLD_MS = 420;
@@ -1201,6 +1223,7 @@ keepSel(tools, b => {
   if (t==="bigger") return fontStep(+1);
   if (t==="smaller") return fontStep(-1);
   if (t==="fmt") return toggleFmt(b);
+  if (t==="times"){ settings.showTimes = !settings.showTimes; saveSet(); applyTimes(); toast(settings.showTimes ? "Đang hiện giờ của mọi việc" : "Đã ẩn giờ — chỉ việc đang làm hiện số phút"); return; }
   if (t==="indent" || t==="outdent"){ restoreSel(); if (shiftLevel(selBlocks(), t==="indent" ? 1 : -1)) afterEdit(); return; }
   if (t==="time"){ restoreSel(); document.execCommand("insertText", false, dmy(Date.now()) + " " + hm(Date.now())); return afterEdit(); }
   if (t==="mic") return recActive ? stopVoice() : startVoice();
