@@ -1,5 +1,5 @@
 // Sổ Ghi Chú — offline cache. Đổi VERSION mỗi lần cập nhật app.
-const VERSION = "sgc-v3";
+const VERSION = "sgc-v5";
 const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-maskable-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

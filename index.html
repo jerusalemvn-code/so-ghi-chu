@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16181A" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="Sổ tay Mr Toàn">
+<meta name="application-name" content="Sổ tay Mr TOÀN">
 <meta name="description" content="Sổ ghi chú cá nhân chạy offline: danh sách việc có giờ tạo, giờ xong, định dạng chữ, nhập bằng giọng nói.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Sổ tay Mr Toàn</title>
+<title>Sổ tay Mr TOÀN</title>
 <style>
 :root{
   --bg:#F7F7F5; --card:#FFFFFF; --ink:#1D2125; --muted:#5B636B; --faint:#9AA1A8; --line:#E2E2DD; --soft:#ECECE8;
@@ -22,6 +22,10 @@
   --shadow:0 1px 2px rgba(20,20,10,.05),0 2px 8px rgba(20,20,10,.04);
   --font:Roboto,"Segoe UI","Noto Sans",system-ui,-apple-system,sans-serif;
   --safe-b:env(safe-area-inset-bottom,0px);
+  --ink2:#2E3A44; --c-blue:#1F64C8; --tree:#B3B8B0;
+  --l0-size:18px; --l0-w:700; --l0-c:var(--ink);
+  --l1-size:16px; --l1-w:400; --l1-c:var(--ink2);
+  --l2-size:15px; --l2-w:400; --l2-c:var(--muted);
 }
 @media (prefers-color-scheme: dark){
   :root{
@@ -30,6 +34,7 @@
     --doing:#E8954A; --doing-soft:#3A2A17; --doing-text:#F2B57A; --doing-line:#5A4022;
     --n-yellow:#3D3820; --n-green:#24382A; --n-blue:#22324A; --n-pink:#40262D; --n-purple:#332B44;
     --shadow:none;
+    --ink2:#D3D8DD; --c-blue:#8AB4F8; --tree:#4E555B;
   }
   #ed [style*="background-color"]{color:#1D2125}
 }
@@ -139,15 +144,39 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 #ed>div{min-height:1.55em}
 #ed .sz-s{font-size:13.5px} #ed .sz-l{font-size:21px} #ed .sz-h{font-size:25px;font-weight:700;line-height:1.35}
 #ed .ck{position:relative;padding:5px 0 5px 36px}
-#ed .ck::before{content:"";position:absolute;left:0;top:7px;width:22px;height:22px;border-radius:6px;border:2px solid var(--faint);box-sizing:border-box}
-#ed .ck[data-s="doing"]::before{border-color:var(--doing);background:linear-gradient(var(--doing),var(--doing)) center/8px 8px no-repeat}
+#ed :where(.ck){font-size:var(--l0-size);font-weight:var(--l0-w);color:var(--l0-c)}
+#ed :where(.ck[data-l="1"]){font-size:var(--l1-size);font-weight:var(--l1-w);color:var(--l1-c)}
+#ed :where(.ck[data-l="2"]){font-size:var(--l2-size);font-weight:var(--l2-w);color:var(--l2-c)}
+#ed .ck[data-l="1"]{padding-left:64px} #ed .ck[data-l="2"]{padding-left:92px}
+#ed .ck[data-k="p"]{padding-right:38px}
+#ed > [data-h]{display:none}
+#ed .ck::before{content:"";position:absolute;left:0;top:7px;width:22px;height:22px;border-radius:6px;border:2px solid var(--faint);box-sizing:border-box;background-color:var(--card)}
+#ed .ck[data-l="1"]::before{left:28px} #ed .ck[data-l="2"]::before{left:56px}
+#ed .ck[data-s="doing"]::before{border-color:var(--doing);background:var(--card) linear-gradient(var(--doing),var(--doing)) center/8px 8px no-repeat}
 #ed .ck[data-s="done"]::before{border:0;background:var(--accent) no-repeat center/14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")}
 #ed .ck[data-s="done"]{color:var(--muted);text-decoration:line-through}
 #ed .ck::after{content:attr(data-m);display:inline-block;width:100%;font-size:11.5px;line-height:1.3;margin-top:-1px;font-weight:400;font-style:normal;color:var(--muted);user-select:none;-webkit-user-select:none}
 #ed .ck[data-s="doing"]::after{color:var(--doing-text)}
 #ed .ck[data-s="done"]::after{color:var(--accent-text)}
-#ed .ck[data-s="doing"]{background:var(--doing-soft);border-radius:10px;margin:2px -8px;padding-left:44px;padding-right:8px}
-#ed .ck[data-s="doing"]::before{left:8px}
+.einner{position:relative}
+#tree{position:absolute;inset:0;pointer-events:none}
+#tree i{position:absolute;background:var(--tree);border-radius:1px}
+#tree button{position:absolute;pointer-events:auto;width:36px;height:30px;display:grid;place-items:center;color:var(--muted);border-radius:8px}
+#tree button:active{background:var(--soft)}
+#ed > .dragging{opacity:.28}
+.drag-ghost{position:fixed;left:0;top:0;z-index:70;pointer-events:none;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:var(--card);color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.28);border:2px solid var(--accent);font-size:16px;font-weight:600}
+.drag-ghost .gt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drag-ghost .gk{flex:none;font-size:12px;font-weight:700;color:var(--accent-text);background:var(--accent-soft);border-radius:8px;padding:2px 8px}
+.drag-ghost .gbox{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--faint);box-sizing:border-box}
+.drag-ghost .gbox[data-s="doing"]{border-color:var(--doing)} .drag-ghost .gbox[data-s="done"]{border:0;background:var(--accent)}
+.drop-line{position:absolute;height:4px;border-radius:2px;background:var(--accent);pointer-events:none;z-index:5}
+.drop-line::before{content:"";position:absolute;left:-5px;top:-4px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.lvbox{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.lvbox .pv{margin-bottom:8px}
+.lvrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lvrow .sw{height:34px;min-width:34px;font-size:13px}
+.lvrow .dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line)}
+.lvrow .dot.on{border:3px solid var(--accent)}
 
 .tools{flex:none;border-top:1px solid var(--line);background:var(--card);padding:4px 4px calc(4px + var(--safe-b))}
 .trow2{display:flex;align-items:center;justify-content:space-between;gap:2px;overflow-x:auto;scrollbar-width:none}
@@ -194,6 +223,7 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 .toggle button.on{background:var(--card);font-weight:600;box-shadow:var(--shadow)}
 .toast{position:fixed;left:50%;bottom:calc(150px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:86vw;text-align:center}
 .toast.show{opacity:1}
+.scrim:not(.hidden) ~ .toast{bottom:auto;top:calc(16px + env(safe-area-inset-top,0px))}
 </style>
 </head>
 <body>
@@ -202,7 +232,7 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 <section class="view" id="v-notes">
   <div class="top">
     <div class="toprow">
-      <div><div class="date" id="today"></div><h1>Sổ tay Mr Toàn</h1></div>
+      <div><div class="date" id="today"></div><h1>Sổ tay Mr TOÀN</h1></div>
       <button class="ib solid" id="btnSettings" aria-label="Cài đặt và sao lưu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
       </button>
@@ -258,10 +288,11 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
     <button class="ib" id="eMore" aria-label="Thêm"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
   </div>
   <div class="escroll" id="eScroll">
-    <div class="einner">
+    <div class="einner" id="einner">
       <input id="title" placeholder="Tiêu đề" maxlength="200" autocomplete="off" enterkeyhint="next">
       <div class="meta" id="eMeta"></div>
       <div id="ed" contenteditable="true" spellcheck="false" data-ph="Viết ghi chú…"></div>
+      <div id="tree" aria-hidden="false"></div>
     </div>
   </div>
   <div class="voice hidden" id="voice">
@@ -280,8 +311,9 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
       <button class="sw" data-cmd="underline" aria-label="Gạch chân"><span style="text-decoration:underline">U</span></button>
       <button class="sw" data-cmd="strikeThrough" aria-label="Gạch ngang"><span style="text-decoration:line-through">S</span></button>
       <button class="sw" data-cmd="clear">Bỏ định dạng</button>
+      <button class="sw" data-t="time">Chèn giờ hiện tại</button>
     </div>
-    <div class="subrow hidden" id="rowSize">
+    <div class="subrow hidden" id="rowSize"><span style="font-size:12px;color:var(--muted);align-self:center;padding:0 2px">Cỡ cả dòng:</span>
       <button class="sw" data-sz="sz-s">Nhỏ</button>
       <button class="sw" data-sz="">Thường</button>
       <button class="sw" data-sz="sz-l">Lớn</button>
@@ -289,12 +321,12 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
     </div>
     <div class="trow2">
       <button class="tb" data-t="check" aria-label="Ô tích việc cần làm"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></button>
+      <button class="tb" data-t="outdent" aria-label="Lùi ra một cấp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H11M21 12H11M21 18H11M7 9l-3 3 3 3"/></svg></button>
+      <button class="tb" data-t="indent" aria-label="Thụt vào thành việc con"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H11M21 12H11M21 18H11M4 9l3 3-3 3"/></svg></button>
       <button class="tb" data-t="bold" aria-label="In đậm"><b>B</b></button>
       <button class="tb" data-t="bigger" aria-label="Chữ to hơn"><span style="font-weight:600">A<sup style="font-size:11px">+</sup></span></button>
       <button class="tb" data-t="smaller" aria-label="Chữ nhỏ hơn"><span style="font-size:15px">A<sup style="font-size:10px">−</sup></span></button>
-      <button class="tb" data-t="size" aria-label="Cỡ chữ cả dòng"><span style="font-size:15px;font-weight:600">Aa</span></button>
-      <button class="tb" data-t="color" aria-label="Tô màu và kiểu chữ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 21h8"/></svg></button>
-      <button class="tb" data-t="time" aria-label="Chèn ngày giờ hiện tại"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+      <button class="tb" data-t="fmt" aria-label="Cỡ chữ, màu và kiểu chữ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 21h8"/></svg></button>
       <button class="tb mic" data-t="mic" aria-label="Nhập bằng giọng nói"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     </div>
   </div>
@@ -324,6 +356,16 @@ const saveEvents = () => store(K.events, events);
 const saveTpls = () => store(K.tpl, tpls);
 const saveSet = () => store(K.set, settings);
 if (!localStorage.getItem(K.set)) saveSet();
+const LV_DEF = [{size:18,bold:true,color:"ink"},{size:16,bold:false,color:"ink2"},{size:15,bold:false,color:"muted"}];
+if (!Array.isArray(settings.lv) || settings.lv.length !== 3) settings.lv = JSON.parse(JSON.stringify(LV_DEF));
+const LV_NAMES = ["Việc cha","Việc con","Việc cháu"];
+const LV_SIZES = [[14,"Nhỏ"],[16,"Vừa"],[18,"Lớn"],[21,"Rất lớn"]];
+const LV_COLORS = [["ink","Đen"],["ink2","Xám đậm"],["muted","Xám"],["c-blue","Xanh dương"],["accent-text","Xanh lá"],["doing-text","Nâu cam"]];
+function applyLv(){
+  const st = document.documentElement.style;
+  settings.lv.forEach((v, i) => { st.setProperty(`--l${i}-size`, (+v.size||16) + "px"); st.setProperty(`--l${i}-w`, v.bold ? 700 : 400); st.setProperty(`--l${i}-c`, `var(--${LV_COLORS.some(c=>c[0]===v.color) ? v.color : "ink"})`); });
+}
+applyLv();
 let persisted = false;
 (async()=>{ try{ if (navigator.storage && navigator.storage.persist){ persisted = await navigator.storage.persisted() || await navigator.storage.persist(); } }catch(e){} })();
 
@@ -350,11 +392,78 @@ const WDs = ["CN","T2","T3","T4","T5","T6","T7"];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-function itemMeta(el){
+function itemMeta(el, kids){
+  const pre = kids && kids.length ? kids.filter(k => k.dataset.s==="done").length + "/" + kids.length + " việc con · " : "";
+  return pre + itemMeta0(el);
+}
+function itemMeta0(el){
   const s = el.dataset.s || "todo", c = +el.dataset.c || 0, b = +el.dataset.b || 0, d = +el.dataset.d || 0;
   if (s === "done") return (c ? "Tạo " + when(c) + " → " : "") + "Xong " + when(d) + (d && (b||c) ? " · mất " + dur(d - (b||c)) : "");
   if (s === "doing") return "Bắt đầu " + when(b) + " · đã làm " + dur(Date.now() - b);
   return c ? "Tạo " + when(c) : "";
+}
+
+/* ================= tree helpers (cha – con – cháu) ================= */
+const isCk = el => !!el && el.nodeType===1 && el.classList.contains("ck");
+const lv = el => Math.max(0, Math.min(2, +(el && el.dataset && el.dataset.l) || 0));
+const itemText = el => (el.textContent || "").replace(/\u00a0/g," ").trim();
+function kidsOf(rows, i){ const L = lv(rows[i]), out = []; for (let j=i+1; j<rows.length; j++){ const r = rows[j]; if (!isCk(r) || lv(r) <= L) break; if (lv(r) === L+1) out.push(r); } return out; }
+function descOf(rows, i){ const L = lv(rows[i]), out = []; for (let j=i+1; j<rows.length; j++){ const r = rows[j]; if (!isCk(r) || lv(r) <= L) break; out.push(r); } return out; }
+/* parent markers, "1/3 việc con" labels, collapsed rows */
+function markTree(rows){
+  let hideL = 99;
+  rows.forEach((el, i) => {
+    if (!isCk(el)){ hideL = 99; if (el.dataset && el.dataset.h) delete el.dataset.h; return; }
+    const L = lv(el);
+    if (L <= hideL) hideL = 99;
+    const hidden = hideL < 99 && L > hideL;
+    if (hidden) el.dataset.h = "1"; else if (el.dataset.h) delete el.dataset.h;
+    const kids = kidsOf(rows, i);
+    if (kids.length) el.dataset.k = "p"; else { delete el.dataset.k; delete el.dataset.x; }
+    if (!hidden && kids.length && el.dataset.x === "1") hideL = L;
+    const m = itemMeta(el, kids); if (el.dataset.m !== m) el.dataset.m = m;
+  });
+}
+/* parent follows its children: all done -> done, some started -> doing */
+function syncParents(rows, noteId){
+  for (let i = rows.length-1; i >= 0; i--){
+    const el = rows[i]; if (!isCk(el)) continue;
+    const kids = kidsOf(rows, i); if (!kids.length) continue;
+    const st = kids.map(k => k.dataset.s || "todo"), s = el.dataset.s || "todo";
+    if (st.every(x => x==="done")){
+      if (s !== "done"){
+        el.dataset.s = "done";
+        el.dataset.d = Math.max(...kids.map(k => +k.dataset.d || 0)) || Date.now();
+        if (!el.dataset.c) el.dataset.c = Date.now();
+        logEv("done", noteId, itemText(el));
+      }
+    } else if (st.some(x => x !== "todo")){
+      if (s === "todo"){
+        const starts = kids.map(k => +k.dataset.b || +k.dataset.d || 0).filter(Boolean);
+        el.dataset.s = "doing"; el.dataset.b = starts.length ? Math.min(...starts) : Date.now();
+        logEv("start", noteId, itemText(el));
+      } else if (s === "done" && !el.dataset.f){ el.dataset.s = "doing"; delete el.dataset.d; if (!el.dataset.b) el.dataset.b = Date.now(); }
+    } else if (s === "done" && !el.dataset.f){ el.dataset.s = "todo"; delete el.dataset.b; delete el.dataset.d; }
+  }
+}
+/* tap a box: if it would finish a parent that still has open children, ask first */
+function changeStatus(rows, el, noteId, after){
+  const s = nextStatus(el.dataset.s || "todo");
+  const open = s === "done" ? descOf(rows, rows.indexOf(el)).filter(d => (d.dataset.s || "todo") !== "done") : [];
+  const finish = mode => {
+    if (mode === "all") open.forEach(d => applyStatus(d, "done", noteId));
+    applyStatus(el, s, noteId);
+    if (s === "done" && mode === "only") el.dataset.f = "1"; else delete el.dataset.f;
+    syncParents(rows, noteId); markTree(rows);
+    after(s);
+  };
+  if (!open.length) return finish("");
+  openSheet(`<h4>Còn ${open.length} việc con chưa xong</h4>
+    <p>“${esc(itemText(el))}” còn: ${open.slice(0,4).map(d => "<b>" + esc(itemText(d) || "(trống)") + "</b>").join(", ")}${open.length > 4 ? "…" : ""}. Bạn muốn làm gì?</p>
+    <button class="btn pri" style="display:block;width:100%;margin-bottom:8px" data-a="all">Xong tất cả (${open.length + 1} việc, ghi giờ ${hm(Date.now())})</button>
+    <button class="btn" style="display:block;width:100%;margin-bottom:8px" data-a="only">Chỉ đánh dấu việc cha</button>
+    <button class="btn" style="display:block;width:100%;background:transparent" data-a="x">Huỷ</button>`,
+    a => { if (a === "all" || a === "only") setTimeout(() => finish(a), 0); });
 }
 
 /* ================= sanitize ================= */
@@ -382,7 +491,10 @@ function sanitize(html){
           const keep = OK_STYLE.map(p => { const v = n.style.getPropertyValue(p); return v && !/url|expression/i.test(v) ? p+":"+v : ""; }).filter(Boolean).join(";");
           keep ? n.setAttribute("style", keep) : n.removeAttribute("style");
         }
-        else if (/^data-(s|c|b|d|id|m)$/.test(nm)){ if (nm==="data-s" && !/^(todo|doing|done)$/.test(a.value)) n.removeAttribute(nm); else if (/^data-(c|b|d)$/.test(nm) && !/^\d{0,15}$/.test(a.value)) n.removeAttribute(nm); }
+        else if (/^data-(s|c|b|d|id|m|l|k|x|h|f)$/.test(nm)){
+          const v = a.value;
+          if ((nm==="data-s" && !/^(todo|doing|done)$/.test(v)) || (/^data-(c|b|d)$/.test(nm) && !/^\d{0,15}$/.test(v)) || (nm==="data-l" && !/^[0-2]$/.test(v)) || (nm==="data-k" && v!=="p") || (/^data-(x|h|f)$/.test(nm) && v!=="1") || (nm==="data-id" && !/^[a-z0-9]{1,40}$/i.test(v))) n.removeAttribute(nm);
+        }
         else if (n.tagName==="FONT" && nm==="size" && /^[1-7]$/.test(a.value)){}
         else n.removeAttribute(nm);
       });
@@ -403,7 +515,7 @@ function summarize(note){
     if (n.nodeType===1 && n.classList.contains("ck")){
       const s = n.dataset.s || "todo";
       if (s==="done"){ done++; if (sameDay(+n.dataset.d||0, Date.now())) doneToday++; } else if (s==="doing") doing++; else todo++;
-      lines.push({t:txt, s});
+      lines.push({t:txt, s, l:lv(n)});
     } else if (txt.trim() || lines.length) lines.push({t:txt});
   });
   while (lines.length && !lines[lines.length-1].t.trim() && !lines[lines.length-1].s) lines.pop();
@@ -425,9 +537,11 @@ function logEv(k, noteId, text){
 function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
 let sheetCb = null;
 function openSheet(html, cb){
+  const already = !$("scrim").classList.contains("hidden");
+  const keepScroll = already ? $("sheet").scrollTop : 0;
   $("sheet").innerHTML = '<div class="grab"></div>' + html;
   sheetCb = cb; $("scrim").classList.remove("hidden");
-  pushLayer("sheet");
+  if (!already) pushLayer("sheet"); else $("sheet").scrollTop = keepScroll;
 }
 function closeSheet(viaPop){ if ($("scrim").classList.contains("hidden")) return; $("scrim").classList.add("hidden"); sheetCb=null; if(!viaPop) popLayer("sheet"); }
 $("scrim").addEventListener("click", e => {
@@ -490,7 +604,7 @@ function boxChar(s){ return s==="done" ? "☑ " : s==="doing" ? "▣ " : "☐ ";
 function card(n){
   const s = n.sum;
   const badge = s.doing ? '<span class="badge doing">Đang làm</span>' : (s.total && s.done===s.total ? '<span class="badge done">Đã xong</span>' : "");
-  const pv = (n.pv||[]).map(l => l.s ? `<span class="${l.s==="done"?"x":""}">${boxChar(l.s)}${esc(l.t)}</span>` : esc(l.t)).join("\n");
+  const pv = (n.pv||[]).map(l => l.s ? `<span class="${l.s==="done"?"x":""}">${"    ".repeat(l.l||0)}${boxChar(l.s)}${esc(l.t)}</span>` : esc(l.t)).join("\n");
   const prog = s.total ? `<span class="bar"><i style="width:${Math.round(s.done/s.total*100)}%"></i></span><span>${s.done}/${s.total}</span>` : `<span style="flex:1">${when(n.updated)}</span>`;
   return `<button class="card" data-id="${n.id}" data-c="${n.color}" style="background:var(--n-${n.color})">${badge}${n.title.trim()?`<h3>${esc(n.title)}</h3>`:""}${pv?`<div class="pv">${pv}</div>`:""}<div class="ft">${prog}${n.pinned?'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM11 13h2v8h-2z"/></svg>':""}</div></button>`;
 }
@@ -518,7 +632,15 @@ $("list").addEventListener("click", e => { const c = e.target.closest(".card"); 
 /* ---------- tasks view ---------- */
 function allItems(all){
   const out = [];
-  all.forEach(n => frag(n.html).querySelectorAll(".ck").forEach(el => out.push({note:n, id:el.dataset.id, s:el.dataset.s||"todo", t:(el.textContent||"").trim(), meta:itemMeta(el), d:+el.dataset.d||0, c:+el.dataset.c||0, b:+el.dataset.b||0})));
+  all.forEach(n => {
+    const rows = [...frag(n.html).children], path = [];
+    rows.forEach((el, i) => {
+      if (!isCk(el)){ path.length = 0; return; }
+      const L = lv(el); path.length = L;
+      out.push({note:n, id:el.dataset.id, s:el.dataset.s||"todo", t:itemText(el), meta:itemMeta(el, kidsOf(rows, i)), path:path.filter(Boolean).join(" › "), l:L, d:+el.dataset.d||0, c:+el.dataset.c||0, b:+el.dataset.b||0});
+      path[L] = itemText(el);
+    });
+  });
   return out;
 }
 function renderTasks(all){
@@ -526,7 +648,7 @@ function renderTasks(all){
   const doing = items.filter(i=>i.s==="doing").sort((a,b)=>a.b-b.b);
   const todo = items.filter(i=>i.s==="todo").sort((a,b)=>a.c-b.c);
   const done = items.filter(i=>i.s==="done" && Date.now()-i.d < 7*DAY).sort((a,b)=>b.d-a.d);
-  const row = i => `<div class="trow" data-s="${i.s}"><button class="box" data-s="${i.s}" data-n="${i.note.id}" data-i="${i.id}" aria-label="Đổi trạng thái"></button><button class="tx" data-open="${i.note.id}"><div class="tt">${esc(i.t)}</div><div class="tm">${esc(i.meta)}${i.note.title?" · "+esc(i.note.title):""}</div></button></div>`;
+  const row = i => `<div class="trow" data-s="${i.s}"><button class="box" data-s="${i.s}" data-n="${i.note.id}" data-i="${i.id}" aria-label="Đổi trạng thái"></button><button class="tx" data-open="${i.note.id}"><div class="tt">${esc(i.t)}</div><div class="tm">${esc(i.meta)}</div><div class="tm" style="color:var(--faint)">${esc([i.note.title, i.path].filter(Boolean).join(" › ") || "Ghi chú không tiêu đề")}</div></button></div>`;
   let h = "";
   if (doing.length) h += `<div class="sec" style="color:var(--doing-text)">Đang làm (${doing.length})</div>` + doing.map(row).join("");
   if (todo.length) h += `<div class="sec">Chưa làm (${todo.length})</div>` + todo.map(row).join("");
@@ -550,12 +672,13 @@ function applyStatus(el, s, noteId){
 }
 function cycleStored(noteId, itemId){
   const n = notes[noteId]; if (!n) return;
-  const f = frag(n.html); const el = [...f.querySelectorAll(".ck")].find(x => x.dataset.id===itemId); if (!el) return;
-  const s = nextStatus(el.dataset.s||"todo");
-  applyStatus(el, s, noteId);
-  const div = document.createElement("div"); div.appendChild(f); n.html = div.innerHTML; n.updated = Date.now();
-  summarize(n); saveNotes(); render();
-  toast(s==="done" ? "Xong lúc " + hm(Date.now()) : s==="doing" ? "Bắt đầu lúc " + hm(Date.now()) : "Đã mở lại việc này");
+  const f = frag(n.html), rows = [...f.children];
+  const el = rows.find(x => isCk(x) && x.dataset.id === itemId); if (!el) return;
+  changeStatus(rows, el, noteId, s => {
+    const div = document.createElement("div"); div.appendChild(f); n.html = div.innerHTML; n.updated = Date.now();
+    summarize(n); saveNotes(); render();
+    toast(s==="done" ? "Xong lúc " + hm(Date.now()) : s==="doing" ? "Bắt đầu lúc " + hm(Date.now()) : "Đã mở lại việc này");
+  });
 }
 
 /* ---------- log view ---------- */
@@ -589,7 +712,7 @@ const BUILTIN = [
   {id:"b-day", name:"Việc cần làm hôm nay", title:"Việc hôm nay", lines:["","",""]},
   {id:"b-cho", name:"Đi chợ", title:"Đi chợ", lines:["",""]}
 ];
-function ckHTML(text, bold){ const now = Date.now(); return `<div class="ck" data-id="${uid()}" data-s="todo" data-c="${now}">${text ? (bold?`<b>${esc(text)}</b> `:esc(text)) : "<br>"}</div>`; }
+function ckHTML(text, bold, l){ const now = Date.now(); return `<div class="ck" data-l="${l||0}" data-id="${uid()}" data-s="todo" data-c="${now}">${text ? (bold?`<b>${esc(text)}</b> `:esc(text)) : "<br>"}</div>`; }
 $("fab").onclick = () => {
   if (view==="tasks") return newNote("", ckHTML(""));
   const mine = tpls.map(t => `<div style="display:flex;align-items:center"><button class="opt" data-a="tpl:${t.id}" style="flex:1"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5zM9 8h6M9 12h6"/></svg></span><span>${esc(t.name)}<small>Mẫu của bạn</small></span></button><button class="ib" data-a="deltpl:${t.id}" aria-label="Xoá mẫu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`).join("");
@@ -614,7 +737,7 @@ $("fab").onclick = () => {
 };
 function freshItems(html){
   const f = frag(sanitize(html)), now = Date.now();
-  f.querySelectorAll(".ck").forEach(el => { el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; delete el.dataset.b; delete el.dataset.d; delete el.dataset.m; });
+  f.querySelectorAll(".ck").forEach(el => { el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","m","f","x","h"].forEach(k => delete el.dataset[k]); });
   const d = document.createElement("div"); d.appendChild(f); return d.innerHTML;
 }
 function newNote(title, html){
@@ -643,6 +766,7 @@ function openEditor(id){
   hideRows();
   pushLayer("editor");
   $("eScroll").scrollTop = 0;
+  scheduleTree();
   if (n.isNew){
     delete n.isNew;
     if (!n.title) setTimeout(()=>{ (ed.textContent.trim() || ed.querySelector(".ck") ? ed : $("title")).focus(); placeCaretEnd(n.title ? ed : null); }, 60);
@@ -662,6 +786,7 @@ function closeEditor(viaPop){
   if (n && !n.title.trim() && !n.text.trim() && !n.sum.total){ delete notes[cur]; saveNotes(); }
   cur = null;
   $("editor").classList.add("hidden");
+  $("tree").innerHTML = "";
   document.body.style.overflow = "";
   if (!viaPop) popLayer("editor");
   ed.blur(); render();
@@ -701,25 +826,80 @@ function selBlocks(){
   return out;
 }
 
-/* keep item ids unique, timestamps & labels fresh */
+/* keep item ids unique, levels valid, timestamps & labels fresh */
+let pendingChild = null;
 function fixItems(){
-  const seen = new Set(), now = Date.now();
-  ed.querySelectorAll(":scope > div").forEach(el => {
-    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m"].forEach(k => { if (el.dataset[k]!==undefined) delete el.dataset[k]; }); return; }
+  const seen = new Set(), now = Date.now(); let prevL = -1;
+  if (pendingChild){ const nb = pendingChild.nextElementSibling; if (isCk(nb) && nb.parentNode === ed) nb.dataset.l = Math.min(2, lv(pendingChild) + 1); pendingChild = null; }
+  const rows = [...ed.children].filter(r => r.tagName === "DIV");
+  rows.forEach(el => {
+    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m","l","k","x","h","f"].forEach(k => { if (el.dataset[k] !== undefined) delete el.dataset[k]; }); prevL = -1; return; }
     if (!el.dataset.id || seen.has(el.dataset.id)){
-      el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; delete el.dataset.b; delete el.dataset.d;
+      el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","x","f","h"].forEach(k => delete el.dataset[k]);
     }
     seen.add(el.dataset.id);
-    const m = itemMeta(el); if (el.dataset.m !== m) el.dataset.m = m;
+    let L = lv(el); if (L > prevL + 1) L = prevL + 1;
+    if (el.dataset.l !== String(L)) el.dataset.l = L;
+    prevL = L;
   });
-  // nested ck (rare: from pasted html) -> unwrap marker
   ed.querySelectorAll(":scope > div div.ck").forEach(el => el.classList.remove("ck"));
+  if (cur) syncParents(rows, cur);
+  markTree(rows);
+  scheduleTree();
 }
+
+/* indent / outdent a line together with its children */
+function shiftLevel(blocks, d){
+  const rows = [...ed.children], tgt = new Set();
+  blocks.forEach(b => {
+    if (!b || b.parentNode !== ed) return;
+    if (!isCk(b)){ if (d < 0) return; b.classList.add("ck"); b.dataset.id = uid(); b.dataset.s = "todo"; b.dataset.c = Date.now(); b.dataset.l = 0; }
+    tgt.add(b); descOf(rows, rows.indexOf(b)).forEach(x => tgt.add(x));
+  });
+  const list = rows.filter(r => tgt.has(r)); if (!list.length) return false;
+  if (d > 0){
+    const prev = rows[rows.indexOf(list[0]) - 1];
+    if (!isCk(prev) || lv(prev) < lv(list[0])){ toast("Cần có một việc ngay phía trên để làm việc cha"); return false; }
+    if (list.some(x => lv(x) >= 2)){ toast("Tối đa 3 cấp: cha – con – cháu"); return false; }
+  } else if (list.every(x => lv(x) === 0)) return false;
+  list.forEach(x => { x.dataset.l = Math.max(0, Math.min(2, lv(x) + d)); });
+  return true;
+}
+
+/* ---------- tree lines drawn beside the text ---------- */
+let treeRaf = 0;
+function scheduleTree(){ cancelAnimationFrame(treeRaf); treeRaf = requestAnimationFrame(drawTree); }
+const CHEV_OPEN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+const CHEV_SHUT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+function drawTree(){
+  const box = $("tree");
+  if (!cur){ box.innerHTML = ""; return; }
+  const base = $("einner").getBoundingClientRect();
+  let h = ""; const stack = [];
+  [...ed.children].forEach(el => {
+    if (!isCk(el)){ stack.length = 0; return; }
+    if (el.dataset.h) return;
+    const r = el.getBoundingClientRect(), L = lv(el);
+    const top = r.top - base.top, left = r.left - base.left;
+    const cx = left + L*28 + 11, cy = top + 18;
+    while (stack.length && stack[stack.length-1].l >= L) stack.pop();
+    const p = stack[stack.length-1];
+    if (L > 0 && p && p.l === L-1){
+      h += `<i style="left:${p.cx-1}px;top:${p.cy+11}px;width:2px;height:${Math.max(0, cy-p.cy-10)}px"></i>`;
+      h += `<i style="left:${p.cx-1}px;top:${cy-1}px;width:${Math.max(0, cx-11-3-p.cx+1)}px;height:2px"></i>`;
+    }
+    if (el.dataset.k === "p") h += `<button data-tg="${el.dataset.id}" style="top:${top+3}px;right:-6px" aria-label="${el.dataset.x ? "Mở việc con" : "Thu gọn việc con"}">${el.dataset.x ? CHEV_SHUT : CHEV_OPEN}</button>`;
+    stack.push({l:L, cx, cy});
+  });
+  box.innerHTML = h;
+}
+window.addEventListener("resize", scheduleTree);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleTree);
 
 function refreshMeta(full){
   if (!cur) return;
   const n = notes[cur];
-  if (full) fixItems(); else ed.querySelectorAll(':scope > .ck[data-s="doing"]').forEach(el => el.dataset.m = itemMeta(el));
+  if (full) fixItems(); else markTree([...ed.children]);
   const items = ed.querySelectorAll(":scope > .ck");
   let done=0, doing=0; items.forEach(el => { if (el.dataset.s==="done") done++; else if (el.dataset.s==="doing") doing++; });
   const chars = (ed.textContent||"").length;
@@ -755,13 +935,28 @@ $("title").addEventListener("input", () => { refreshMeta(); scheduleSave(); });
 $("title").addEventListener("keydown", e => { if (e.key==="Enter"){ e.preventDefault(); const f = ed.firstElementChild; ed.focus(); if (f){ const r=document.createRange(); r.setStart(f,0); r.collapse(true); const s=getSelection(); s.removeAllRanges(); s.addRange(r);} } });
 ed.addEventListener("input", () => { fixItems(); refreshMeta(); scheduleSave(); });
 
-/* Enter on an empty checklist line -> leave the list */
+/* Enter / Backspace behaviour inside the task tree */
+function caretEdge(b, atEnd){
+  const sel = getSelection(); if (!sel.rangeCount || !sel.isCollapsed) return false;
+  const r = document.createRange();
+  try{
+    if (atEnd){ r.setStart(sel.anchorNode, sel.anchorOffset); r.setEnd(b, b.childNodes.length); }
+    else { r.setStart(b, 0); r.setEnd(sel.anchorNode, sel.anchorOffset); }
+  }catch(e){ return false; }
+  return r.toString() === "";
+}
 ed.addEventListener("beforeinput", e => {
-  if (e.inputType !== "insertParagraph") return;
   const b = selBlocks()[0];
-  if (b && b.classList.contains("ck") && !(b.textContent||"").trim()){
-    e.preventDefault();
-    b.classList.remove("ck"); fixItems(); refreshMeta(); scheduleSave();
+  if (!b || !isCk(b)) return;
+  if (e.inputType === "insertParagraph"){
+    if (!itemText(b)){                       // empty line: step out one level, then leave the list
+      e.preventDefault();
+      if (lv(b) > 0) shiftLevel([b], -1); else b.classList.remove("ck");
+      afterEdit(); return;
+    }
+    if (b.dataset.k === "p" && b.dataset.x !== "1" && caretEdge(b, true)) pendingChild = b;   // new line becomes the first child
+  } else if (e.inputType === "deleteContentBackward" && lv(b) > 0 && caretEdge(b, false)){
+    e.preventDefault(); shiftLevel([b], -1); afterEdit();
   }
 });
 
@@ -780,28 +975,140 @@ function zoneHit(x, y, target){
   const b = target && target.closest ? target.closest("#ed > .ck") : null;
   if (!b) return null;
   const r = b.getBoundingClientRect();
-  const left = b.dataset.s==="doing" ? 8 : 0;
-  return (x - r.left < left + 34 && y - r.top < 36) ? b : null;
+  const dx = x - r.left - lv(b)*28;
+  return (dx > -6 && dx < 34 && y - r.top < 36) ? b : null;
 }
-let tapStart = null;
+let tapStart = null, swipe = null, suppressClick = false;
+const HOLD_MS = 420;
+function holdStart(b, x, y){
+  tapStart = {b, x, y, timer: setTimeout(() => { const st = tapStart; if (st){ tapStart = null; startDrag(st.b, st.x, st.y); } }, HOLD_MS)};
+}
+function holdCancel(){ if (tapStart){ clearTimeout(tapStart.timer); tapStart = null; } }
+
 ed.addEventListener("touchstart", e => {
   const t = e.touches[0]; const b = zoneHit(t.clientX, t.clientY, e.target);
-  if (b){ e.preventDefault(); tapStart = {b, x:t.clientX, y:t.clientY}; }
+  if (b){ e.preventDefault(); swipe = null; holdStart(b, t.clientX, t.clientY); return; }
+  const row = e.target.closest ? e.target.closest("#ed > div") : null;
+  swipe = row ? {row, x:t.clientX, y:t.clientY, done:false} : null;
 }, {passive:false});
+ed.addEventListener("touchmove", e => {
+  if (tapStart){ const t = e.touches[0]; if (Math.abs(t.clientX-tapStart.x) > 10 || Math.abs(t.clientY-tapStart.y) > 10) holdCancel(); }
+  if (!swipe || swipe.done || drag) return;
+  const t = e.touches[0], dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+  if (Math.abs(dy) > 30){ swipe = null; return; }
+  if (Math.abs(dx) > 70){
+    swipe.done = true;
+    if (shiftLevel([swipe.row], dx > 0 ? 1 : -1)){ afterEdit(); toast(dx > 0 ? "Đã thụt vào: thành việc con" : "Đã lùi ra một cấp"); if (navigator.vibrate) try{ navigator.vibrate(10); }catch(err){} }
+  }
+}, {passive:true});
 ed.addEventListener("touchend", e => {
   if (!tapStart) return;
-  const t = e.changedTouches[0], s = tapStart; tapStart = null;
-  if (Math.abs(t.clientX-s.x) < 12 && Math.abs(t.clientY-s.y) < 12){ e.preventDefault(); cycleLive(s.b); }
+  const t = e.changedTouches[0], st = tapStart; holdCancel();
+  if (Math.abs(t.clientX-st.x) < 12 && Math.abs(t.clientY-st.y) < 12){ e.preventDefault(); cycleLive(st.b); }
 });
-ed.addEventListener("mousedown", e => { if (zoneHit(e.clientX, e.clientY, e.target)){ e.preventDefault(); } });
-ed.addEventListener("click", e => { if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return; const b = zoneHit(e.clientX, e.clientY, e.target); if (b) cycleLive(b); });
+ed.addEventListener("contextmenu", e => { if (drag || zoneHit(e.clientX, e.clientY, e.target)) e.preventDefault(); });
+/* drag while finger is down (document-level so it keeps working outside the row) */
+document.addEventListener("touchmove", e => { if (!drag) return; e.preventDefault(); const t = e.touches[0]; moveDrag(t.clientX, t.clientY); }, {passive:false});
+document.addEventListener("touchend", e => { if (drag){ e.preventDefault(); endDrag(true); } }, {passive:false});
+document.addEventListener("touchcancel", () => { holdCancel(); if (drag) endDrag(false); });
+/* mouse (computer) */
+ed.addEventListener("mousedown", e => {
+  if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
+  const b = zoneHit(e.clientX, e.clientY, e.target); if (!b) return;
+  e.preventDefault(); holdStart(b, e.clientX, e.clientY);
+});
+document.addEventListener("mousemove", e => {
+  if (tapStart && (Math.abs(e.clientX-tapStart.x) > 10 || Math.abs(e.clientY-tapStart.y) > 10)) holdCancel();
+  if (drag) moveDrag(e.clientX, e.clientY);
+});
+document.addEventListener("mouseup", () => { if (drag){ endDrag(true); suppressClick = true; } else holdCancel(); });
+ed.addEventListener("click", e => {
+  if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
+  if (suppressClick){ suppressClick = false; return; }
+  const b = zoneHit(e.clientX, e.clientY, e.target); if (b) cycleLive(b);
+});
+
+/* ---------- long-press drag to reorder (a parent carries its whole subtree) ---------- */
+let drag = null;
+function startDrag(b, x, y){
+  if (!cur || !isCk(b)) return;
+  flush();
+  ed.blur(); hideRows();
+  const rows = [...ed.children], group = [b, ...descOf(rows, rows.indexOf(b))];
+  const r = b.getBoundingClientRect();
+  const ghost = document.createElement("div");
+  ghost.className = "drag-ghost";
+  const kids = group.length - 1;
+  ghost.innerHTML = `<span class="gbox" data-s="${b.dataset.s||"todo"}"></span><span class="gt">${esc(itemText(b) || "(trống)")}</span>${kids ? `<span class="gk">+${kids} việc con</span>` : ""}`;
+  ghost.style.width = Math.min(r.width, innerWidth - 24) + "px";
+  document.body.appendChild(ghost);
+  const line = document.createElement("div"); line.className = "drop-line"; $("einner").appendChild(line);
+  group.forEach(g => g.classList.add("dragging"));
+  drag = {b, group, ghost, line, startX:x, dy: y - r.top, origL: lv(b), maxRel: Math.max(...group.map(g => lv(g) - lv(b))), target:null, x, y, raf:0};
+  if (navigator.vibrate) try{ navigator.vibrate(25); }catch(e){}
+  moveDrag(x, y);
+  autoScroll();
+}
+function autoScroll(){
+  if (!drag) return;
+  const sc = $("eScroll"), r = sc.getBoundingClientRect();
+  let v = 0;
+  if (drag.y < r.top + 70) v = -Math.ceil((r.top + 70 - drag.y) / 6);
+  else if (drag.y > r.bottom - 70) v = Math.ceil((drag.y - (r.bottom - 70)) / 6);
+  if (v){ sc.scrollTop += v; placeDrop(); }
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+function moveDrag(x, y){
+  if (!drag) return;
+  drag.x = x; drag.y = y;
+  drag.ghost.style.transform = `translate(${12}px, ${y - drag.dy}px)`;
+  placeDrop();
+}
+function placeDrop(){
+  const d = drag, rows = [...ed.children].filter(r => !d.group.includes(r) && !r.dataset.h);
+  let next = null, prev = null;
+  for (const r of rows){ const rc = r.getBoundingClientRect(); if (d.y < rc.top + rc.height/2){ next = r; break; } prev = r; }
+  const maxDeep = 2 - d.maxRel;
+  let minL = isCk(next) ? lv(next) : 0, maxL = isCk(prev) ? lv(prev) + 1 : 0;
+  maxL = Math.min(maxL, maxDeep); minL = Math.min(minL, maxL);
+  const want = d.origL + Math.round((d.x - d.startX) / 40);
+  const level = Math.max(minL, Math.min(maxL, want));
+  d.target = {next, prev, level};
+  const base = $("einner").getBoundingClientRect(), er = ed.getBoundingClientRect();
+  const yy = next ? next.getBoundingClientRect().top : (prev ? prev.getBoundingClientRect().bottom : er.top);
+  d.line.style.top = (yy - base.top - 2) + "px";
+  d.line.style.left = (er.left - base.left + level*28) + "px";
+  d.line.style.width = (er.width - level*28) + "px";
+  d.line.dataset.l = level;
+}
+function endDrag(apply){
+  const d = drag; if (!d) return; drag = null;
+  cancelAnimationFrame(d.raf);
+  d.ghost.remove(); d.line.remove();
+  d.group.forEach(g => g.classList.remove("dragging"));
+  if (!apply || !d.target) return;
+  const {next, prev, level} = d.target;
+  const before = d.b.previousElementSibling, oldL = lv(d.b);
+  if (next) d.group.forEach(g => ed.insertBefore(g, next));
+  else if (prev){ let after = prev; while (after.nextElementSibling && after.nextElementSibling.dataset.h) after = after.nextElementSibling; d.group.forEach(g => { after.after(g); after = g; }); }
+  const delta = level - oldL;
+  d.group.forEach(g => { g.dataset.l = Math.max(0, Math.min(2, lv(g) + delta)); });
+  // open any collapsed parent it was dropped into
+  let L = lv(d.b), n = d.b.previousElementSibling;
+  while (n && L > 0){ if (isCk(n) && lv(n) < L){ delete n.dataset.x; L = lv(n); } n = n.previousElementSibling; }
+  const moved = d.b.previousElementSibling !== before || delta !== 0;
+  afterEdit();
+  if (moved){ toast(d.group.length > 1 ? `Đã chuyển cả nhóm ${d.group.length} việc` : "Đã chuyển vị trí"); if (navigator.vibrate) try{ navigator.vibrate(12); }catch(e){} }
+}
+
 function cycleLive(b){
   flush();
-  const s = nextStatus(b.dataset.s || "todo");
-  applyStatus(b, s, cur);
-  if (navigator.vibrate) try{ navigator.vibrate(12); }catch(e){}
-  refreshMeta(); scheduleSave();
-  toast(s==="done" ? "Xong lúc " + hm(Date.now()) : s==="doing" ? "Bắt đầu lúc " + hm(Date.now()) : "Đã mở lại");
+  const rows = [...ed.children];
+  changeStatus(rows, b, cur, s => {
+    if (navigator.vibrate) try{ navigator.vibrate(12); }catch(e){}
+    refreshMeta(); scheduleSave(); scheduleTree();
+    toast(s==="done" ? "Xong lúc " + hm(Date.now()) : s==="doing" ? "Bắt đầu lúc " + hm(Date.now()) : "Đã mở lại");
+  });
 }
 
 /* selection memory so toolbar taps don't lose it */
@@ -827,8 +1134,8 @@ function keepSel(el, fn){
   el.addEventListener("mousedown", e => { if (e.target.closest("button")) e.preventDefault(); });
   el.addEventListener("click", e => { const b = e.target.closest("button"); if (b) fn(b); });
 }
-function hideRows(){ $("rowColor").classList.add("hidden"); $("rowSize").classList.add("hidden"); tools.querySelectorAll('[data-t="size"],[data-t="color"]').forEach(b=>b.classList.remove("on")); }
-function toggleRow(id, btn){ const show = $(id).classList.contains("hidden"); hideRows(); if (show){ $(id).classList.remove("hidden"); btn.classList.add("on"); updateSizeRow(); } }
+function hideRows(){ $("rowColor").classList.add("hidden"); $("rowSize").classList.add("hidden"); tools.querySelectorAll('[data-t="fmt"]').forEach(b=>b.classList.remove("on")); }
+function toggleFmt(btn){ const show = $("rowColor").classList.contains("hidden"); hideRows(); if (show){ $("rowColor").classList.remove("hidden"); $("rowSize").classList.remove("hidden"); btn.classList.add("on"); updateSizeRow(); } }
 function exec(cmd, val){ restoreSel(); try{ document.execCommand("styleWithCSS", false, true); }catch(e){} document.execCommand(cmd, false, val); afterEdit(); }
 function afterEdit(){ fixItems(); refreshMeta(); scheduleSave(); }
 
@@ -838,8 +1145,8 @@ keepSel(tools, b => {
   if (t==="bold") return exec("bold");
   if (t==="bigger") return fontStep(+1);
   if (t==="smaller") return fontStep(-1);
-  if (t==="size") return toggleRow("rowSize", b);
-  if (t==="color") return toggleRow("rowColor", b);
+  if (t==="fmt") return toggleFmt(b);
+  if (t==="indent" || t==="outdent"){ restoreSel(); if (shiftLevel(selBlocks(), t==="indent" ? 1 : -1)) afterEdit(); return; }
   if (t==="time"){ restoreSel(); document.execCommand("insertText", false, dmy(Date.now()) + " " + hm(Date.now())); return afterEdit(); }
   if (t==="mic") return recActive ? stopVoice() : startVoice();
   if (b.dataset.hl) return exec("hiliteColor", b.dataset.hl);
@@ -862,10 +1169,16 @@ function toggleChecklist(){
   const now = Date.now();
   blocks.forEach(b => {
     if (allCk){ b.classList.remove("ck"); }
-    else if (!b.classList.contains("ck")){ b.classList.add("ck"); b.dataset.id = uid(); b.dataset.s = "todo"; b.dataset.c = now; }
+    else if (!b.classList.contains("ck")){ b.classList.add("ck"); b.dataset.id = uid(); b.dataset.s = "todo"; b.dataset.c = now; b.dataset.l = 0; }
   });
   afterEdit();
 }
+
+keepSel($("tree"), btn => {
+  const el = [...ed.children].find(x => isCk(x) && x.dataset.id === btn.dataset.tg); if (!el) return;
+  if (el.dataset.x) delete el.dataset.x; else el.dataset.x = "1";
+  markTree([...ed.children]); scheduleTree(); scheduleSave();
+});
 
 const STEPS = [12,14,16,17,19,21,24,28,34,40];
 function fontStep(dir){
@@ -921,7 +1234,7 @@ $("eMore").onclick = () => {
     if (a.startsWith("color:")){ n.color = a.slice(6); n.updated = Date.now(); saveNotes(); $("editor").dataset.c = n.color; }
     else if (a==="copy") copyText(plainOf(n));
     else if (a==="share"){ const text = plainOf(n); if (navigator.share) navigator.share({title:n.title||"Ghi chú", text}).catch(()=>{}); else copyText(text); }
-    else if (a==="tpl"){ setTimeout(()=>askTemplateName(n), 50); }
+    else if (a==="tpl"){ askTemplateName(n); return true; }
     else if (a==="del"){
       n.del = Date.now(); logEv("del", cur, ""); saveNotes();
       closeEditor(false); toast("Đã chuyển vào thùng rác");
@@ -934,7 +1247,7 @@ function plainOf(n){
     const t = (el.textContent||"").replace(/ /g," ");
     if (el.nodeType===1 && el.classList.contains("ck")){
       const s = el.dataset.s||"todo";
-      lines.push((s==="done"?"☑ ":s==="doing"?"◐ ":"☐ ") + t + (s==="done" ? "  (xong " + when(+el.dataset.d) + ")" : ""));
+      lines.push("    ".repeat(lv(el)) + (s==="done"?"☑ ":s==="doing"?"▣ ":"☐ ") + t + (s==="done" ? "  (xong " + when(+el.dataset.d) + ")" : ""));
     } else lines.push(t);
   });
   return (n.title ? n.title + "\n\n" : "") + lines.join("\n").trim();
@@ -1010,6 +1323,7 @@ $("btnSettings").onclick = () => {
     <button class="opt" data-a="export"><span class="ic" style="background:var(--accent-soft);color:var(--accent-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span>Sao lưu ra file<small>Lưu vào thư mục Tải xuống (Download)</small></span></button>
     <button class="opt" data-a="sharebk"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 18a5 5 0 0 1-.6-10A6 6 0 0 1 18 9a4 4 0 0 1-.5 9z"/></svg></span><span>Gửi bản sao lưu lên Drive / Zalo<small>Chọn Google Drive để cất an toàn</small></span></button>
     <button class="opt" data-a="import"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg></span><span>Khôi phục từ file sao lưu<small>Gộp với ghi chú hiện có, không xoá gì</small></span></button>
+    <button class="opt" data-a="lvstyle"><span class="ic"><span style="font-weight:800;font-size:15px">Aa</span></span><span>Kiểu chữ việc cha – con – cháu<small>Cỡ chữ, in đậm, màu mặc định cho từng cấp</small></span></button>
     <button class="opt" data-a="trash"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><span>Thùng rác (${trash.length})</span></button>
     <div class="sec">Khi chạm vào ô tích</div>
     <div class="toggle"><button data-a="tap3" class="${settings.tap!==2?"on":""}">Chưa → Đang làm → Xong</button><button data-a="tap2" class="${settings.tap===2?"on":""}">Chưa → Xong</button></div>`,
@@ -1017,10 +1331,30 @@ $("btnSettings").onclick = () => {
     if (a==="export") exportBackup();
     else if (a==="sharebk") shareBackup();
     else if (a==="import") $("fileIn").click();
-    else if (a==="trash") setTimeout(openTrash, 50);
+    else if (a==="trash") { openTrash(); return true; }
+    else if (a==="lvstyle") { openLvSheet(); return true; }
     else if (a==="tap3" || a==="tap2"){ settings.tap = a==="tap2" ? 2 : 3; saveSet(); toast("Đã đổi"); $("btnSettings").onclick(); return true; }
   });
 };
+function openLvSheet(){
+  const html = settings.lv.map((v, i) => `
+    <div class="lvbox">
+      <div class="pv" style="padding-left:${i*22}px;font-size:${v.size}px;font-weight:${v.bold?700:400};color:var(--${v.color})">${i ? "└ " : ""}${LV_NAMES[i]} — ví dụ nội dung</div>
+      <div class="lvrow">${LV_SIZES.map(([z,n]) => `<button class="sw ${v.size===z?"on":""}" data-a="lv:${i}:size:${z}">${n}</button>`).join("")}
+        <button class="sw ${v.bold?"on":""}" data-a="lv:${i}:bold" aria-label="In đậm"><b>B</b></button></div>
+      <div class="lvrow" style="margin-top:8px">${LV_COLORS.map(([c,n]) => `<button class="dot ${v.color===c?"on":""}" data-a="lv:${i}:color:${c}" aria-label="${n}" style="background:var(--${c})"></button>`).join("")}</div>
+    </div>`).join("");
+  openSheet(`<h4>Kiểu chữ việc cha – con – cháu</h4><p>Áp dụng mặc định cho mọi danh sách việc. Muốn chỉnh riêng một dòng thì bôi đen rồi dùng B, A+, A− hoặc bút tô màu.</p>${html}
+    <div class="row2"><button class="btn" data-a="lvreset">Về mặc định</button><button class="btn pri" data-a="x">Xong</button></div>`,
+  a => {
+    if (a === "lvreset"){ settings.lv = JSON.parse(JSON.stringify(LV_DEF)); }
+    else if (a.startsWith("lv:")){
+      const [, i, k, v] = a.split(":"); const o = settings.lv[+i];
+      if (k === "size") o.size = +v; else if (k === "bold") o.bold = !o.bold; else if (k === "color") o.color = v;
+    } else return;
+    saveSet(); applyLv(); openLvSheet(); return true;
+  });
+}
 function openTrash(){
   const now = Date.now();
   Object.keys(notes).forEach(id => { if (notes[id].del && now - notes[id].del > 30*DAY) delete notes[id]; });
