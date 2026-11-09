@@ -23,6 +23,8 @@
   --font:Roboto,"Segoe UI","Noto Sans",system-ui,-apple-system,sans-serif;
   --safe-b:env(safe-area-inset-bottom,0px);
   --ink2:#2E3A44; --c-blue:#1F64C8; --tree:#B3B8B0;
+  --dl-far-c:#5B636B; --dl-far-b:#EEEEEA; --dl-soon-c:#1F57B0; --dl-soon-b:#E4EDFB; --dl-today-c:#8A4B08; --dl-today-b:#FFEFD6;
+  --dl-urg-c:#FFFFFF; --dl-urg-b:#E0661B; --dl-over-c:#FFFFFF; --dl-over-b:#C42B1C; --dl-late-c:#A23A2E; --dl-late-b:#FBE6E3;
   --f-size:16px; --f-w:400; --f-c:var(--ink);
   --l0-size:18px; --l0-w:700; --l0-c:var(--ink);
   --l1-size:16px; --l1-w:400; --l1-c:var(--ink2);
@@ -36,6 +38,8 @@
     --n-yellow:#3D3820; --n-green:#24382A; --n-blue:#22324A; --n-pink:#40262D; --n-purple:#332B44;
     --shadow:none;
     --ink2:#D3D8DD; --c-blue:#8AB4F8; --tree:#4E555B;
+    --dl-far-c:#A3AAB1; --dl-far-b:#2B2F33; --dl-soon-c:#8AB4F8; --dl-soon-b:#1E2E4A; --dl-today-c:#F2B57A; --dl-today-b:#3A2A17;
+    --dl-late-c:#F19A8F; --dl-late-b:#3A1F1C;
   }
   #ed [style*="background-color"]{color:#1D2125}
 }
@@ -60,8 +64,8 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 .search{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 5px 0 14px;height:48px}
 .search input{flex:1;border:0;outline:0;background:none;font-size:15px;min-width:0}
 .mic-sm{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent-text);display:grid;place-items:center}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:1px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;text-align:left;display:flex;flex-direction:column;gap:1px}
 .stat b{font-size:22px}
 .stat span{font-size:12px;color:var(--muted)}
 .stat.doing{background:var(--doing-soft);border-color:var(--doing-line)} .stat.doing b,.stat.doing span{color:var(--doing-text)}
@@ -161,6 +165,46 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 #ed .ck[data-s="doing"]::after{color:var(--doing-text);background:var(--doing-soft);font-weight:600}
 #ed .ck[data-s="done"]::after{color:var(--accent-text);background:var(--accent-soft)}
 #ed .ck:not([data-q])::after,#ed .ck[data-q=""]::after{display:none}
+#ed .ck[data-dl="far"]::after,.dchip[data-dl="far"]{color:var(--dl-far-c);background:var(--dl-far-b);font-weight:500}
+#ed .ck[data-dl="soon"]::after,.dchip[data-dl="soon"]{color:var(--dl-soon-c);background:var(--dl-soon-b);font-weight:600}
+#ed .ck[data-dl="today"]::after,.dchip[data-dl="today"]{color:var(--dl-today-c);background:var(--dl-today-b);font-weight:700}
+#ed .ck[data-dl="urgent"]::after,.dchip[data-dl="urgent"]{color:var(--dl-urg-c);background:var(--dl-urg-b);font-weight:700}
+#ed .ck[data-dl="over"]::after,.dchip[data-dl="over"]{color:var(--dl-over-c);background:var(--dl-over-b);font-weight:700}
+#ed .ck[data-dl="ontime"]::after,.dchip[data-dl="ontime"]{color:var(--accent-text);background:var(--accent-soft);font-weight:600}
+#ed .ck[data-dl="late"]::after,.dchip[data-dl="late"]{color:var(--dl-late-c);background:var(--dl-late-b);font-weight:600}
+#ed .ck[data-dl="over"][data-s="todo"]::before{border-color:#C42B1C}
+.dchip{display:inline-block;margin-left:6px;padding:0 7px;border-radius:6px;font-size:11px;line-height:18px;vertical-align:1px;white-space:nowrap;text-decoration:none}
+.trow[data-s="done"] .tt .dchip{text-decoration:none}
+.box[data-over]{border-color:#C42B1C}
+.meta span.over{background:var(--dl-over-b);color:var(--dl-over-c);font-weight:700}
+.meta span.today{background:var(--dl-today-b);color:var(--dl-today-c);font-weight:700}
+.badge.over{background:var(--dl-over-b);color:var(--dl-over-c)}
+.badge.today{background:var(--dl-today-b);color:var(--dl-today-c)}
+.stat.over{background:var(--dl-over-b);border-color:transparent} .stat.over b,.stat.over span{color:var(--dl-over-c)}
+.nbadge{position:absolute;top:0;margin-left:22px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#C42B1C;color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center}
+.nav button{position:relative}
+/* deadline sheet */
+.dlsec{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 7px}
+.dlrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.dlopt{flex:none;padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:14px;display:flex;flex-direction:column;align-items:center;line-height:1.2;color:var(--ink)}
+.dlopt small{font-size:11px;color:var(--muted)}
+.dlopt.on,.dlbox.on{border:2px solid var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
+.dlbox{flex:1;display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:14px;color:var(--ink);min-height:44px}
+.dlbox input{width:52px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--bg);text-align:center;font-size:17px;font-weight:700;outline:0}
+.dlbox input:focus{border:2px solid var(--accent)}
+.dlcalbtn{width:100%;margin-top:8px;justify-content:flex-start}
+.dlcal{border:1px solid var(--line);border-radius:14px;padding:8px 8px 6px;margin-top:8px}
+.dlcal .hd{display:flex;align-items:center;justify-content:space-between;padding:0 0 6px}
+.dlcal .gr{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.dlcal .wd{font-size:11.5px;font-weight:600;color:var(--muted);padding:2px 0 4px}
+.dlcal .wd.sun{color:#C42B1C}
+.dlcal .dd{height:38px;border-radius:50%;font-size:14px;display:grid;place-items:center;color:var(--ink)}
+.dlcal .dd.sun{color:#C42B1C}
+.dlcal .dd:disabled{color:var(--faint);opacity:.55}
+.dlcal .dd.today{box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent-text);font-weight:700}
+.dlcal .dd.sel{background:var(--accent);color:var(--accent-ink);font-weight:700;box-shadow:none}
+.dlprev{display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.4;margin:12px 0 4px;background:var(--dl-soon-b);color:var(--dl-soon-c)}
+.dlprev.bad{background:var(--dl-late-b);color:var(--dl-late-c)}
 #ed.times .ck::after{content:attr(data-m);display:inline-block;white-space:normal}
 #ed.times .ck[data-m=""]::after{display:none}
 .einner{position:relative}
@@ -186,9 +230,9 @@ h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em}
 .tools{flex:none;border-top:1px solid var(--line);background:var(--card);padding:4px 4px calc(4px + var(--safe-b))}
 .trow2{display:flex;align-items:center;justify-content:space-between;gap:2px;overflow-x:auto;scrollbar-width:none}
 .trow2::-webkit-scrollbar{display:none}
-.tb{flex:none;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:18px}
+.tb{flex:none;width:40px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:18px}
 .tb:active,.tb.on{background:var(--accent-soft);color:var(--accent-text)}
-.tb.mic{background:var(--accent);color:var(--accent-ink);width:48px}
+.tb.mic{background:var(--accent);color:var(--accent-ink);width:46px}
 .tb.mic.rec{background:var(--danger);color:#fff}
 .tb b{font-weight:800;font-size:19px}
 .subrow{display:flex;flex-wrap:wrap;gap:6px;padding:6px 4px 4px}
@@ -274,6 +318,7 @@ body.selecting .view{padding-top:56px}
     <div class="stats">
       <button class="stat" data-go="tasks"><b id="sTodo">0</b><span>Chưa làm</span></button>
       <button class="stat doing" data-go="tasks"><b id="sDoing">0</b><span>Đang làm</span></button>
+      <button class="stat" data-go="tasks" id="tOver"><b id="sOver">0</b><span>Quá hạn</span></button>
       <button class="stat done" data-go="log"><b id="sDone">0</b><span>Xong hôm nay</span></button>
     </div>
     <div class="chips" id="chips">
@@ -289,7 +334,8 @@ body.selecting .view{padding-top:56px}
 
 <!-- ============ TASKS ============ -->
 <section class="view hidden" id="v-tasks">
-  <div class="top"><h1>Việc làm</h1><div class="date">Tất cả các việc trong mọi ghi chú. Chạm ô vuông để đổi trạng thái.</div></div>
+  <div class="top"><h1>Việc làm</h1><div class="date">Tất cả các việc trong mọi ghi chú. Chạm ô vuông để đổi trạng thái.</div>
+    <div class="chips" id="tchips"><button class="chip" data-tv="due">Theo thời hạn</button><button class="chip" data-tv="status">Theo trạng thái</button></div></div>
   <div id="tasksList"></div>
 </section>
 
@@ -312,7 +358,7 @@ body.selecting .view{padding-top:56px}
 </div>
 <nav class="nav" id="nav">
   <button class="on" data-v="notes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h4"/></svg>Ghi chú</button>
-  <button data-v="tasks"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l2 2 4-4M4 16l2 2 4-4M14 7h7M14 16h7"/></svg>Việc làm</button>
+  <button data-v="tasks"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l2 2 4-4M4 16l2 2 4-4M14 7h7M14 16h7"/></svg>Việc làm<span class="nbadge hidden" id="navOver"></span></button>
   <button data-v="log"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Nhật ký</button>
 </nav>
 <button class="fab" id="fab" aria-label="Tạo mới"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -344,6 +390,7 @@ body.selecting .view{padding-top:56px}
     <button id="esAll"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg><span>Chọn tất cả</span></button>
     <button id="esDone"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5 5L18 6M11 16l1 1L23 6"/></svg><span>Đã xong</span></button>
     <button id="esTodo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/></svg><span>Chưa làm</span></button>
+    <button id="esDue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg><span>Thời hạn</span></button>
     <button id="esDel" class="dan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Xoá</span></button>
   </div>
   <div class="tools" id="tools">
@@ -372,6 +419,7 @@ body.selecting .view{padding-top:56px}
       <button class="tb" data-t="indent" aria-label="Thụt vào thành việc con"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H11M21 12H11M21 18H11M4 9l3 3-3 3"/></svg></button>
       <button class="tb" data-t="bold" aria-label="In đậm"><b>B</b></button>
       <button class="tb" data-t="bigger" aria-label="Chữ to hơn"><span style="font-weight:600">A<sup style="font-size:11px">+</sup></span></button>
+      <button class="tb" data-t="due" aria-label="Thời hạn phải hoàn thành"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></button>
       <button class="tb" data-t="times" id="btnTimes" aria-label="Hiện hoặc ẩn giờ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
       <button class="tb" data-t="fmt" aria-label="Cỡ chữ, màu và kiểu chữ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 21h8"/></svg></button>
       <button class="tb mic" data-t="mic" aria-label="Nhập bằng giọng nói"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
@@ -445,6 +493,40 @@ const WDs = ["CN","T2","T3","T4","T5","T6","T7"];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+/* ---------- deadlines: always computed in Vietnam time (UTC+7, no DST) ---------- */
+const VN = 7*3600e3;
+function vnParts(ts){ const d = new Date(ts + VN); return {y:d.getUTCFullYear(), m:d.getUTCMonth(), d:d.getUTCDate(), h:d.getUTCHours(), mi:d.getUTCMinutes(), wd:d.getUTCDay()}; }
+const vnTs = (y, m, d, h, mi) => Date.UTC(y, m, d, h, mi) - VN;
+function vnEndOfToday(){ const P = vnParts(Date.now()); return vnTs(P.y, P.m, P.d, 23, 59) + 59999; }
+const vnHM = P => P.h === 23 && P.mi === 59 ? "Cuối ngày" : pad(P.h) + ":" + pad(P.mi);
+function vnLabel(ts){ const P = vnParts(ts); return `${vnHM(P)}, ${WD[P.wd]} ${pad(P.d)}/${pad(P.m+1)}/${P.y}`; }
+function vnShort(ts){ const P = vnParts(ts), N = vnParts(Date.now()); return `${vnHM(P).toLowerCase()} ${pad(P.d)}/${pad(P.m+1)}${P.y!==N.y?"/"+P.y:""}`; }
+function durShort(ms){
+  const m = Math.max(1, Math.round(ms/60000));
+  if (m < 60) return m + " phút";
+  const h = Math.floor(m/60), mm = m % 60;
+  if (h < 24) return h + " giờ" + (mm ? " " + mm + " phút" : "");
+  const d = Math.floor(h/24), hh = h % 24;
+  return d + " ngày" + (hh && d < 3 ? " " + hh + " giờ" : "");
+}
+function durLong(ms){
+  const m = Math.floor(ms/60000), d = Math.floor(m/1440), h = Math.floor(m%1440/60), mm = m%60;
+  return [d ? d + " ngày" : "", h ? h + " giờ" : "", mm || (!d && !h) ? mm + " phút" : ""].filter(Boolean).join(" ");
+}
+const hmm = ms => { const m = Math.max(0, Math.floor(ms/60000)); return Math.floor(m/60) + ":" + pad(m%60); };
+/* one label per task: colour gets hotter as the deadline gets closer */
+function dueInfo(el){
+  const due = +el.dataset.due; if (!due) return null;
+  const now = Date.now();
+  if ((el.dataset.s || "todo") === "done"){ const d = +el.dataset.d || now; return d <= due ? {st:"ontime", t:"Đúng hạn"} : {st:"late", t:"Trễ " + durShort(d - due)}; }
+  const left = due - now;
+  if (left < 0) return {st:"over", t:"Quá hạn " + durShort(-left)};
+  if (left < 3600e3) return {st:"urgent", t:"Còn " + hmm(left)};
+  if (left < DAY) return {st:"today", t:"Còn " + hmm(left)};
+  if (left < 3*DAY){ const dd = Math.floor(left/DAY), hh = Math.floor(left%DAY/3600e3); return {st:"soon", t:"Còn " + dd + " ngày" + (hh ? " " + hh + " giờ" : "")}; }
+  const P = vnParts(due); return {st:"far", t:"Hạn " + pad(P.d) + "/" + pad(P.m+1)};
+}
+
 function itemMeta(el, kids){
   const pre = kids && kids.length ? kids.filter(k => k.dataset.s==="done").length + "/" + kids.length + " việc con · " : "";
   return pre + itemMeta0(el);
@@ -474,8 +556,11 @@ function markTree(rows){
     const kids = kidsOf(rows, i);
     if (kids.length) el.dataset.k = "p"; else { delete el.dataset.k; delete el.dataset.x; }
     if (!hidden && kids.length && el.dataset.x === "1") hideL = L;
-    const m = itemMeta(el, kids); if (el.dataset.m !== m) el.dataset.m = m;
-    const q = [kids.length ? kids.filter(k => k.dataset.s==="done").length + "/" + kids.length : "",
+    const di = dueInfo(el);
+    if (di){ if (el.dataset.dl !== di.st) el.dataset.dl = di.st; } else if (el.dataset.dl) delete el.dataset.dl;
+    const m = (di ? (di.st === "ontime" || di.st === "late" ? di.t + " (hạn " + vnShort(+el.dataset.due) + ")" : "Hạn " + vnShort(+el.dataset.due) + " · " + di.t) + " · " : "") + itemMeta(el, kids);
+    if (el.dataset.m !== m) el.dataset.m = m;
+    const q = [di ? di.t : "", kids.length ? kids.filter(k => k.dataset.s==="done").length + "/" + kids.length : "",
                el.dataset.s === "doing" && +el.dataset.b ? (Date.now() - +el.dataset.b < 60000 ? "vừa bắt đầu" : dur(Date.now() - +el.dataset.b)) : ""].filter(Boolean).join(" · ");
     if (el.dataset.q !== q) el.dataset.q = q;
   });
@@ -491,7 +576,7 @@ function syncParents(rows, noteId){
         el.dataset.s = "done";
         el.dataset.d = Math.max(...kids.map(k => +k.dataset.d || 0)) || Date.now();
         if (!el.dataset.c) el.dataset.c = Date.now();
-        logEv("done", noteId, itemText(el));
+        logEv("done", noteId, itemText(el), +el.dataset.due || 0);
       }
     } else if (st.some(x => x !== "todo")){
       if (s === "todo"){
@@ -589,9 +674,9 @@ function sanitize(html){
           const keep = OK_STYLE.map(p => { const v = n.style.getPropertyValue(p); return v && !/url|expression/i.test(v) ? p+":"+v : ""; }).filter(Boolean).join(";");
           keep ? n.setAttribute("style", keep) : n.removeAttribute("style");
         }
-        else if (/^data-(s|c|b|d|id|m|l|k|x|h|f|o|q)$/.test(nm)){
+        else if (/^data-(s|c|b|d|id|m|l|k|x|h|f|o|q|due|dl)$/.test(nm)){
           const v = a.value;
-          if ((nm==="data-s" && !/^(todo|doing|done)$/.test(v)) || (/^data-(c|b|d)$/.test(nm) && !/^\d{0,15}$/.test(v)) || (nm==="data-l" && !/^[0-2]$/.test(v)) || (nm==="data-k" && v!=="p") || (/^data-(x|h|f)$/.test(nm) && v!=="1") || (nm==="data-id" && !/^[a-z0-9]{1,40}$/i.test(v)) || (nm==="data-o" && !/^-?\d+(\.\d+)?(e-?\d+)?$/.test(v))) n.removeAttribute(nm);
+          if ((nm==="data-s" && !/^(todo|doing|done)$/.test(v)) || (/^data-(c|b|d)$/.test(nm) && !/^\d{0,15}$/.test(v)) || (nm==="data-l" && !/^[0-2]$/.test(v)) || (nm==="data-k" && v!=="p") || (/^data-(x|h|f)$/.test(nm) && v!=="1") || (nm==="data-id" && !/^[a-z0-9]{1,40}$/i.test(v)) || (nm==="data-o" && !/^-?\d+(\.\d+)?(e-?\d+)?$/.test(v)) || (nm==="data-due" && !/^\d{1,15}$/.test(v)) || (nm==="data-dl" && !/^(far|soon|today|urgent|over|ontime|late)$/.test(v))) n.removeAttribute(nm);
         }
         else if (n.tagName==="FONT" && nm==="size" && /^[1-7]$/.test(a.value)){}
         else n.removeAttribute(nm);
@@ -606,18 +691,20 @@ function sanitize(html){
 function frag(html){ const t = document.createElement("template"); t.innerHTML = html || ""; return t.content; }
 function summarize(note){
   const f = frag(note.html);
-  const lines = []; let todo=0, doing=0, done=0, doneToday=0;
+  const lines = []; let todo=0, doing=0, done=0, doneToday=0, over=0, dueToday=0;
+  const now = Date.now(), eod = vnEndOfToday();
   const blocks = [...f.childNodes];
   blocks.forEach(n => {
     const txt = (n.textContent || "").replace(/ /g," ");
     if (n.nodeType===1 && n.classList.contains("ck")){
       const s = n.dataset.s || "todo";
       if (s==="done"){ done++; if (sameDay(+n.dataset.d||0, Date.now())) doneToday++; } else if (s==="doing") doing++; else todo++;
+      const due = +n.dataset.due; if (due && s !== "done"){ if (due < now) over++; else if (due <= eod) dueToday++; }
       lines.push({t:txt, s, l:lv(n)});
     } else if (txt.trim() || lines.length) lines.push({t:txt});
   });
   while (lines.length && !lines[lines.length-1].t.trim() && !lines[lines.length-1].s) lines.pop();
-  note.sum = {todo, doing, done, total:todo+doing+done, doneToday};
+  note.sum = {todo, doing, done, total:todo+doing+done, doneToday, over, dueToday};
   note.text = lines.map(l=>l.t).join("\n");
   note.pv = lines.slice(0,10);
   return note;
@@ -625,8 +712,10 @@ function summarize(note){
 Object.values(notes).forEach(n => { if (!n.sum) summarize(n); });
 
 /* ================= events ================= */
-function logEv(k, noteId, text){
-  events.push({t:Date.now(), k, n:noteId, x:String(text||"").slice(0,140), h:(notes[noteId]&&notes[noteId].title)||""});
+function logEv(k, noteId, text, due){
+  const e = {t:Date.now(), k, n:noteId, x:String(text||"").slice(0,140), h:(notes[noteId]&&notes[noteId].title)||""};
+  if (due) e.du = due;
+  events.push(e);
   if (events.length > 3000) events = events.slice(-3000);
   saveEvents();
 }
@@ -693,11 +782,12 @@ function liveNotes(){ return Object.entries(notes).filter(([,n]) => !n.del).map(
 function render(){
   const now = new Date();
   $("today").textContent = WD[now.getDay()] + ", " + dmy(now);
+  Object.values(notes).forEach(n => { if (!n.del) summarize(n); });   // deadlines & "today" change with the clock
   const all = liveNotes();
-  let t=0,g=0,d=0; all.forEach(n => { t+=n.sum.todo; g+=n.sum.doing; d+=n.sum.doneToday; });
-  // doneToday may be stale across midnight: recompute cheaply
-  d = 0; all.forEach(n => { frag(n.html).querySelectorAll('.ck[data-s="done"]').forEach(el => { if (sameDay(+el.dataset.d||0, Date.now())) d++; }); });
-  $("sTodo").textContent = t; $("sDoing").textContent = g; $("sDone").textContent = d;
+  let t=0,g=0,d=0,o=0; all.forEach(n => { t+=n.sum.todo; g+=n.sum.doing; d+=n.sum.doneToday; o+=n.sum.over; });
+  $("sTodo").textContent = t; $("sDoing").textContent = g; $("sDone").textContent = d; $("sOver").textContent = o;
+  $("tOver").classList.toggle("over", o > 0);
+  $("navOver").textContent = o; $("navOver").classList.toggle("hidden", !o);
   renderBanner(all.length);
   if (view==="notes") renderNotes(all);
   if (view==="tasks") renderTasks(all);
@@ -714,7 +804,7 @@ function renderBanner(count){
 function boxChar(s){ return s==="done" ? "☑ " : s==="doing" ? "▣ " : "☐ "; }
 function card(n){
   const s = n.sum;
-  const badge = s.doing ? '<span class="badge doing">Đang làm</span>' : (s.total && s.done===s.total ? '<span class="badge done">Đã xong</span>' : "");
+  const badge = s.over ? `<span class="badge over">${s.over} quá hạn</span>` : s.dueToday ? `<span class="badge today">${s.dueToday} hạn hôm nay</span>` : s.doing ? '<span class="badge doing">Đang làm</span>' : (s.total && s.done===s.total ? '<span class="badge done">Đã xong</span>' : "");
   const pv = (n.pv||[]).map(l => l.s ? `<span class="${l.s==="done"?"x":""}">${"    ".repeat(l.l||0)}${boxChar(l.s)}${esc(l.t)}</span>` : esc(l.t)).join("\n");
   const prog = s.total ? `<span class="bar"><i style="width:${Math.round(s.done/s.total*100)}%"></i></span><span>${s.done}/${s.total}</span>` : `<span style="flex:1">${when(n.updated)}</span>`;
   return `<button class="card${selMode && picked.has(n.id) ? " sel" : ""}" data-id="${n.id}" data-c="${n.color}" style="background:var(--n-${n.color})"><span class="tick"></span>${badge}${n.title.trim()?`<h3>${esc(n.title)}</h3>`:""}${pv?`<div class="pv">${pv}</div>`:""}<div class="ft">${prog}${n.pinned?'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM11 13h2v8h-2z"/></svg>':""}</div></button>`;
@@ -822,24 +912,35 @@ function allItems(all){
     rows.forEach((el, i) => {
       if (!isCk(el)){ path.length = 0; return; }
       const L = lv(el); path.length = L;
-      out.push({note:n, id:el.dataset.id, s:el.dataset.s||"todo", t:itemText(el), meta:itemMeta(el, kidsOf(rows, i)), path:path.filter(Boolean).join(" › "), l:L, d:+el.dataset.d||0, c:+el.dataset.c||0, b:+el.dataset.b||0});
+      out.push({note:n, id:el.dataset.id, s:el.dataset.s||"todo", t:itemText(el), meta:itemMeta(el, kidsOf(rows, i)), path:path.filter(Boolean).join(" › "), l:L, d:+el.dataset.d||0, c:+el.dataset.c||0, b:+el.dataset.b||0, due:+el.dataset.due||0, di:dueInfo(el)});
       path[L] = itemText(el);
     });
   });
   return out;
 }
 function renderTasks(all){
+  if (!settings.taskView) settings.taskView = "due";
+  [...$("tchips").children].forEach(c => c.classList.toggle("on", c.dataset.tv === settings.taskView));
   const items = allItems(all).filter(i => i.t);
-  const doing = items.filter(i=>i.s==="doing").sort((a,b)=>a.b-b.b);
-  const todo = items.filter(i=>i.s==="todo").sort((a,b)=>a.c-b.c);
+  const row = i => `<div class="trow" data-s="${i.s}"><button class="box" data-s="${i.s}" ${i.di && i.di.st==="over" && i.s==="todo" ? "data-over" : ""} data-n="${i.note.id}" data-i="${i.id}" aria-label="Đổi trạng thái"></button><button class="tx" data-open="${i.note.id}"><div class="tt">${esc(i.t)}${i.di ? `<span class="dchip" data-dl="${i.di.st}">${esc(i.di.t)}</span>` : ""}</div><div class="tm">${esc(i.meta)}</div><div class="tm" style="color:var(--faint)">${esc([i.note.title, i.path].filter(Boolean).join(" › ") || "Ghi chú không tiêu đề")}</div></button></div>`;
+  const sec = (title, list, color) => list.length ? `<div class="sec" style="${color ? "color:" + color : ""}">${title} (${list.length})</div>` + list.map(row).join("") : "";
   const done = items.filter(i=>i.s==="done" && Date.now()-i.d < 7*DAY).sort((a,b)=>b.d-a.d);
-  const row = i => `<div class="trow" data-s="${i.s}"><button class="box" data-s="${i.s}" data-n="${i.note.id}" data-i="${i.id}" aria-label="Đổi trạng thái"></button><button class="tx" data-open="${i.note.id}"><div class="tt">${esc(i.t)}</div><div class="tm">${esc(i.meta)}</div><div class="tm" style="color:var(--faint)">${esc([i.note.title, i.path].filter(Boolean).join(" › ") || "Ghi chú không tiêu đề")}</div></button></div>`;
   let h = "";
-  if (doing.length) h += `<div class="sec" style="color:var(--doing-text)">Đang làm (${doing.length})</div>` + doing.map(row).join("");
-  if (todo.length) h += `<div class="sec">Chưa làm (${todo.length})</div>` + todo.map(row).join("");
-  if (done.length) h += `<div class="sec" style="color:var(--accent-text)">Đã xong 7 ngày qua (${done.length})</div>` + done.map(row).join("");
+  if (settings.taskView === "due"){
+    const now = Date.now(), eod = vnEndOfToday(), open = items.filter(i => i.s !== "done");
+    const byDue = (a, b) => a.due - b.due;
+    h += sec("Quá hạn", open.filter(i => i.due && i.due < now).sort(byDue), "#C42B1C");
+    h += sec("Hạn hôm nay", open.filter(i => i.due >= now && i.due <= eod).sort(byDue), "var(--dl-today-c)");
+    h += sec("Sắp tới", open.filter(i => i.due > eod).sort(byDue), "var(--dl-soon-c)");
+    h += sec("Không có hạn", open.filter(i => !i.due).sort((a, b) => (a.s==="doing" ? 0 : 1) - (b.s==="doing" ? 0 : 1) || a.c - b.c));
+  } else {
+    h += sec("Đang làm", items.filter(i=>i.s==="doing").sort((a,b)=>a.b-b.b), "var(--doing-text)");
+    h += sec("Chưa làm", items.filter(i=>i.s==="todo").sort((a,b)=>a.c-b.c));
+  }
+  h += sec("Đã xong 7 ngày qua", done, "var(--accent-text)");
   $("tasksList").innerHTML = h || `<div class="empty"><b>Chưa có việc nào</b>Trong ghi chú, bấm nút ô tích ở thanh công cụ để biến một dòng thành việc cần làm.</div>`;
 }
+$("tchips").addEventListener("click", e => { const b = e.target.closest("[data-tv]"); if (!b) return; settings.taskView = b.dataset.tv; saveSet(); render(); });
 $("tasksList").addEventListener("click", e => {
   const box = e.target.closest(".box");
   if (box){ cycleStored(box.dataset.n, box.dataset.i); return; }
@@ -851,7 +952,7 @@ function applyStatus(el, s, noteId){
   el.dataset.s = s;
   if (!el.dataset.c) el.dataset.c = now;
   if (s==="doing"){ el.dataset.b = now; delete el.dataset.d; logEv("start", noteId, text); }
-  else if (s==="done"){ el.dataset.d = now; logEv("done", noteId, text); }
+  else if (s==="done"){ el.dataset.d = now; logEv("done", noteId, text, +el.dataset.due || 0); }
   else { delete el.dataset.b; delete el.dataset.d; logEv("reopen", noteId, text); }
   el.dataset.m = itemMeta(el);
 }
@@ -880,7 +981,7 @@ function renderLog(){
   $("days").innerHTML = days;
   const evs = events.filter(e => sameDay(e.t, sel)).sort((a,b)=>b.t-a.t);
   const label = {note:"Tạo ghi chú", start:"Bắt đầu làm", done:"Hoàn thành", reopen:"Mở lại việc", del:"Xoá ghi chú", voice:"Ghi bằng giọng nói"};
-  const doneDur = e => { if (e.k!=="done") return ""; const st = events.find(x => x.n===e.n && x.k==="start" && x.x===e.x && x.t<e.t && e.t-x.t<30*DAY); return st ? " · mất " + dur(e.t-st.t) : ""; };
+  const doneDur = e => { if (e.k!=="done") return ""; const st = events.find(x => x.n===e.n && x.k==="start" && x.x===e.x && x.t<e.t && e.t-x.t<30*DAY); return (st ? " · mất " + dur(e.t-st.t) : "") + (e.du ? (e.t <= e.du ? " · đúng hạn" : " · trễ " + durShort(e.t - e.du)) : ""); };
   $("logList").innerHTML = `<div class="sec">${sameDay(sel, today) ? "Hôm nay" : WD[sel.getDay()]} · ${dmy(sel)}</div>` + (evs.length ? evs.map(e => {
     const title = (notes[e.n] && notes[e.n].title) || e.h || "Ghi chú không tiêu đề";
     const main = e.x ? e.x : title;
@@ -922,7 +1023,7 @@ $("fab").onclick = () => {
 };
 function freshItems(html){
   const f = frag(sanitize(html)), now = Date.now();
-  f.querySelectorAll(".ck").forEach(el => { el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","m","f","x","h","o"].forEach(k => delete el.dataset[k]); });
+  f.querySelectorAll(".ck").forEach(el => { el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","m","f","x","h","o","due","dl","q"].forEach(k => delete el.dataset[k]); });
   const d = document.createElement("div"); d.appendChild(f); return d.innerHTML;
 }
 function newNote(title, html){
@@ -1020,9 +1121,9 @@ function fixItems(){
   const rows = [...ed.children].filter(r => r.tagName === "DIV"), fresh = new Set();
   let maxL = -1;
   rows.forEach(el => {
-    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m","l","k","x","h","f","o","q"].forEach(k => { if (el.dataset[k] !== undefined) delete el.dataset[k]; }); prevL = -1; return; }
+    if (!el.classList.contains("ck")){ ["s","c","b","d","id","m","l","k","x","h","f","o","q","due","dl"].forEach(k => { if (el.dataset[k] !== undefined) delete el.dataset[k]; }); prevL = -1; return; }
     if (!el.dataset.id || seen.has(el.dataset.id)){
-      el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","x","f","h"].forEach(k => delete el.dataset[k]); fresh.add(el);
+      el.dataset.id = uid(); el.dataset.s = "todo"; el.dataset.c = now; ["b","d","x","f","h","due","dl"].forEach(k => delete el.dataset[k]); fresh.add(el);
     }
     seen.add(el.dataset.id);
     let L = lv(el); if (L > prevL + 1) L = prevL + 1;
@@ -1092,7 +1193,9 @@ function chipHit(x, y, target){
   const rects = [...r.getClientRects()].filter(q => q.width > 0);
   if (!rects.length) return null;
   const last = rects[rects.length-1];
-  return (y >= last.top - 3 && y <= last.bottom + 3 && x > last.right + 2) ? row : null;
+  const label = ed.classList.contains("times") ? row.dataset.m : row.dataset.q;   // only where a label is actually drawn
+  if (!label) return null;
+  return (y >= last.top - 3 && y <= last.bottom + 3 && x > last.right + 2 && x < last.right + 14 + label.length * 6.5) ? row : null;
 }
 ed.addEventListener("click", e => {
   const row = chipHit(e.clientX, e.clientY, e.target);
@@ -1111,6 +1214,9 @@ function refreshMeta(full){
   if (n.updated - n.created > 60000) h += `<span>Sửa ${when(n.updated)}</span>`;
   h += `<span>${chars} ký tự</span>`;
   if (items.length) h += `<span class="${done===items.length?"done":doing?"doing":""}">${done}/${items.length} việc xong${doing?" · "+doing+" đang làm":""}</span>`;
+  let ov = 0, td = 0; items.forEach(el => { if (el.dataset.dl === "over") ov++; else if (el.dataset.s !== "done" && +el.dataset.due && +el.dataset.due <= vnEndOfToday()) td++; });
+  if (ov) h += `<span class="over">${ov} quá hạn</span>`;
+  if (td) h += `<span class="today">${td} hạn hôm nay</span>`;
   $("eMeta").innerHTML = h;
 }
 
@@ -1364,6 +1470,13 @@ function bulkStatus(target){
 }
 $("esDone").onclick = () => bulkStatus("done");
 $("esTodo").onclick = () => bulkStatus("todo");
+$("esDue").onclick = () => {
+  const list = [...ed.querySelectorAll(":scope > .picked")];
+  if (!list.length) return;
+  list.forEach(x => { if (!isCk(x)){ x.classList.add("ck"); x.dataset.id = uid(); x.dataset.s = "todo"; x.dataset.c = Date.now(); x.dataset.l = 0; } });
+  fixItems();
+  openDueSheet(list, true);
+};
 $("esDel").onclick = () => {
   const list = pickedRows(true); if (!list.length) return;
   const sel = ed.querySelectorAll(":scope > .picked").length, kids = list.length - sel;
@@ -1375,6 +1488,112 @@ $("esDel").onclick = () => {
     toast(`Đã xoá ${list.length} dòng`);
   });
 };
+
+/* ---------- "Thời hạn phải hoàn thành" sheet ---------- */
+function openDueSheet(targets, fromSel){
+  const first = targets[0], existing = +first.dataset.due || 0, P = vnParts(Date.now());
+  const st = {dmode:"today", x:"", cal:null, calOpen:false, tmode:"24", hh:"", mm:""};
+  if (existing){
+    const E = vnParts(existing);
+    st.dmode = "cal"; st.cal = {y:E.y, m:E.m, d:E.d};
+    if (E.h===12 && !E.mi) st.tmode = "12"; else if (E.h===22 && !E.mi) st.tmode = "22"; else if (E.h===23 && E.mi===59) st.tmode = "24";
+    else { st.tmode = "typed"; st.hh = String(E.h); st.mm = pad(E.mi); }
+  }
+  let calY = st.cal ? st.cal.y : P.y, calM = st.cal ? st.cal.m : P.m;
+  const what = targets.length > 1 ? `${targets.length} việc đã chọn` : `“${esc(itemText(first).slice(0, 60) || "Việc chưa có nội dung")}”`;
+  const wdS = ["CN","T2","T3","T4","T5","T6","T7"];
+  const todaySub = `${wdS[P.wd]} ${pad(P.d)}/${pad(P.m+1)}`;
+  openSheet(`<h4>Thời hạn phải hoàn thành</h4><p style="margin-bottom:4px">${what}</p>
+    <div class="dlsec">Ngày</div>
+    <div class="dlrow">
+      <button class="dlopt" data-a="dtoday" id="dlToday">Hôm nay<small>${todaySub}</small></button>
+      <label class="dlbox" data-a="din" id="dlIn">Trong <input id="dlX" type="number" inputmode="numeric" min="0" max="999" placeholder="x"> ngày</label>
+    </div>
+    <button class="dlbox dlcalbtn" data-a="dcal" id="dlCalBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span style="flex:1;text-align:left">Chọn ngày trên lịch</span><b id="dlCalVal"></b></button>
+    <div class="dlcal hidden" id="dlCal"></div>
+    <div class="dlsec">Giờ (giờ Việt Nam)</div>
+    <div class="dlrow">
+      <button class="dlopt" data-a="t12" id="dlT12">12:00</button>
+      <button class="dlopt" data-a="t22" id="dlT22">22:00</button>
+      <button class="dlopt" data-a="t24" id="dlT24">Cuối ngày<small>24:00</small></button>
+    </div>
+    <label class="dlbox" data-a="ttyped" id="dlTyped" style="margin-top:8px"><span style="flex:1">Tự nhập giờ</span><input id="dlH" type="number" inputmode="numeric" min="0" max="24" placeholder="giờ"> giờ <input id="dlM" type="number" inputmode="numeric" min="0" max="59" placeholder="phút"> phút</label>
+    <div class="dlprev" id="dlPrev"></div>
+    <div class="row2">${existing ? `<button class="btn" style="color:var(--danger)" data-a="dremove">Bỏ thời hạn</button>` : `<button class="btn" data-a="x">Huỷ</button>`}<button class="btn pri" data-a="dsave" style="flex:1.4">Lưu thời hạn</button></div>`,
+  a => {
+    if (a === "dtoday"){ st.dmode = "today"; st.calOpen = false; }
+    else if (a === "din"){ st.dmode = "in"; st.calOpen = false; }
+    else if (a === "dcal"){ st.calOpen = !st.calOpen; if (st.cal) st.dmode = "cal"; }
+    else if (a === "calprev"){ calM--; if (calM < 0){ calM = 11; calY--; } }
+    else if (a === "calnext"){ calM++; if (calM > 11){ calM = 0; calY++; } }
+    else if (a.startsWith("day:")){ const [y, m, d] = a.slice(4).split("-").map(Number); st.cal = {y, m, d}; st.dmode = "cal"; st.calOpen = false; }
+    else if (a === "t12" || a === "t22" || a === "t24"){ st.tmode = a.slice(1); }
+    else if (a === "ttyped"){ st.tmode = "typed"; }
+    else if (a === "dremove"){
+      targets.forEach(x => { delete x.dataset.due; delete x.dataset.dl; });
+      afterDue(fromSel); toast("Đã bỏ thời hạn"); return;
+    }
+    else if (a === "dsave"){
+      const ts = dueTs();
+      if (ts === null){ toast(st.dmode === "cal" && !st.cal ? "Hãy chọn một ngày trên lịch" : "Giờ hoặc số ngày chưa hợp lệ"); return true; }
+      targets.forEach(x => { x.dataset.due = ts; });
+      afterDue(fromSel); toast("Hạn: " + vnLabel(ts)); return;
+    }
+    else if (a === "x") return;
+    paint(); return true;
+  });
+  const X = $("dlX"), H = $("dlH"), M = $("dlM");
+  X.value = st.x; H.value = st.hh; M.value = st.mm;
+  X.addEventListener("input", () => { st.x = X.value; st.dmode = "in"; st.calOpen = false; paint(); });
+  H.addEventListener("input", () => { st.hh = H.value; st.tmode = "typed"; paint(); });
+  M.addEventListener("input", () => { st.mm = M.value; st.tmode = "typed"; paint(); });
+  function dueDate(){
+    const N = vnParts(Date.now());
+    if (st.dmode === "today") return {y:N.y, m:N.m, d:N.d};
+    if (st.dmode === "in"){ const x = parseInt(st.x, 10); if (isNaN(x) || x < 0 || x > 3650) return null; const Q = vnParts(vnTs(N.y, N.m, N.d + x, 12, 0)); return {y:Q.y, m:Q.m, d:Q.d}; }
+    return st.cal;
+  }
+  function dueTs(){
+    const D = dueDate(); if (!D) return null;
+    let h, mi;
+    if (st.tmode === "12"){ h = 12; mi = 0; } else if (st.tmode === "22"){ h = 22; mi = 0; } else if (st.tmode === "24"){ h = 23; mi = 59; }
+    else { h = parseInt(st.hh, 10); mi = st.mm === "" ? 0 : parseInt(st.mm, 10); if (isNaN(h) || isNaN(mi) || h < 0 || h > 24 || mi < 0 || mi > 59) return null; if (h === 24){ h = 23; mi = 59; } }
+    return vnTs(D.y, D.m, D.d, h, mi);
+  }
+  function calHTML(){
+    const N = vnParts(Date.now()), first = new Date(Date.UTC(calY, calM, 1)).getUTCDay(), days = new Date(Date.UTC(calY, calM + 1, 0)).getUTCDate();
+    const lead = (first + 6) % 7, todayKey = N.y*400 + N.m*31 + N.d;
+    let g = ["T2","T3","T4","T5","T6","T7","CN"].map((w, i) => `<span class="wd${i===6?" sun":""}">${w}</span>`).join("") + "<span></span>".repeat(lead);
+    for (let d = 1; d <= days; d++){
+      const key = calY*400 + calM*31 + d, sun = (lead + d - 1) % 7 === 6;
+      const sel = st.cal && st.cal.y===calY && st.cal.m===calM && st.cal.d===d;
+      g += `<button class="dd${sun?" sun":""}${key===todayKey?" today":""}${sel?" sel":""}" data-a="day:${calY}-${calM}-${d}" ${key < todayKey ? "disabled" : ""}>${d}</button>`;
+    }
+    const canPrev = calY*12 + calM > N.y*12 + N.m;
+    return `<div class="hd"><button class="ib" data-a="calprev" ${canPrev ? "" : "disabled"} aria-label="Tháng trước"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><b>Tháng ${calM+1}, ${calY}</b><button class="ib" data-a="calnext" aria-label="Tháng sau"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div><div class="gr">${g}</div>`;
+  }
+  function paint(){
+    if (!$("dlPrev")) return;
+    $("dlToday").classList.toggle("on", st.dmode === "today");
+    $("dlIn").classList.toggle("on", st.dmode === "in");
+    $("dlCalBtn").classList.toggle("on", st.dmode === "cal");
+    $("dlCalVal").textContent = st.cal ? `${pad(st.cal.d)}/${pad(st.cal.m+1)}/${st.cal.y}` : "";
+    $("dlCal").classList.toggle("hidden", !st.calOpen);
+    if (st.calOpen) $("dlCal").innerHTML = calHTML();
+    ["12","22","24"].forEach(k => $("dlT" + k).classList.toggle("on", st.tmode === k));
+    $("dlTyped").classList.toggle("on", st.tmode === "typed");
+    const ts = dueTs(), pv = $("dlPrev");
+    if (ts === null){ pv.className = "dlprev bad"; pv.innerHTML = st.dmode === "cal" && !st.cal ? "Chọn một ngày trên lịch" : "Nhập số ngày / giờ hợp lệ (giờ 0–24, phút 0–59)"; return; }
+    const left = ts - Date.now();
+    pv.className = "dlprev" + (left < 0 ? " bad" : "");
+    pv.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Hạn: <b>${vnLabel(ts)}</b><br>${left < 0 ? "<b>Thời điểm này đã qua</b>" : "còn <b>" + durLong(left) + "</b>"}</span>`;
+  }
+  paint();
+}
+function afterDue(fromSel){
+  if (fromSel){ ed.querySelectorAll(".picked").forEach(x => x.classList.remove("picked")); renderEdSel(); }
+  afterEdit(); flush();
+}
 
 function cycleLive(b){
   flush();
@@ -1421,6 +1640,13 @@ keepSel(tools, b => {
   if (t==="bigger") return fontStep(+1);
   if (t==="smaller") return fontStep(-1);
   if (t==="fmt") return toggleFmt(b);
+  if (t==="due"){
+    restoreSel();
+    let bl = selBlocks(); if (!bl.length){ toast("Đặt con trỏ vào một việc trước"); return; }
+    bl.forEach(x => { if (!isCk(x)){ x.classList.add("ck"); x.dataset.id = uid(); x.dataset.s = "todo"; x.dataset.c = Date.now(); x.dataset.l = 0; } });
+    fixItems();
+    return openDueSheet(bl, false);
+  }
   if (t==="times"){ settings.showTimes = !settings.showTimes; saveSet(); applyTimes(); toast(settings.showTimes ? "Đang hiện giờ của mọi việc" : "Đã ẩn giờ — chỉ việc đang làm hiện số phút"); return; }
   if (t==="indent" || t==="outdent"){ restoreSel(); if (shiftLevel(selBlocks(), t==="indent" ? 1 : -1)) afterEdit(); return; }
   if (t==="time"){ restoreSel(); document.execCommand("insertText", false, dmy(Date.now()) + " " + hm(Date.now())); return afterEdit(); }
@@ -1705,7 +1931,7 @@ $("fileIn").onchange = async e => {
     }
     if (Array.isArray(d.events)){
       const key = e => e.t+"|"+e.k+"|"+e.n+"|"+e.x; const have = new Set(events.map(key));
-      d.events.forEach(e => { if (e && typeof e.t==="number" && typeof e.k==="string" && !have.has(key(e))) events.push({t:e.t, k:String(e.k).slice(0,10), n:String(e.n||""), x:String(e.x||"").slice(0,140), h:String(e.h||"").slice(0,200)}); });
+      d.events.forEach(e => { if (e && typeof e.t==="number" && typeof e.k==="string" && !have.has(key(e))) events.push(Object.assign({t:e.t, k:String(e.k).slice(0,10), n:String(e.n||""), x:String(e.x||"").slice(0,140), h:String(e.h||"").slice(0,200)}, typeof e.du==="number" ? {du:e.du} : {})); });
       events.sort((a,b)=>a.t-b.t); if (events.length>3000) events = events.slice(-3000);
     }
     if (Array.isArray(d.templates)) d.templates.forEach(t => { if (t && t.id && !tpls.some(x=>x.id===t.id)) tpls.push({id:String(t.id).slice(0,40), name:String(t.name||"Mẫu").slice(0,60), title:String(t.title||"").slice(0,200), html:sanitize(String(t.html||""))}); });
