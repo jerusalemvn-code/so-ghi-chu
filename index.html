@@ -302,6 +302,27 @@ body.selecting .view{padding-top:56px}
 #ed.selmode{caret-color:transparent;-webkit-user-select:none;user-select:none}
 #ed.selmode > div{border-radius:8px;cursor:pointer}
 #ed.selmode > div.picked{background:var(--accent-soft);box-shadow:inset 4px 0 0 var(--accent)}
+/* user guide */
+#guide{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column}
+#guide .gtop{display:flex;align-items:center;gap:4px;padding:6px 6px;border-bottom:1px solid var(--line);background:var(--card)}
+#guide .gtop b{font-size:17px}
+#guide .gscroll{flex:1;overflow-y:auto;padding:14px 14px calc(30px + var(--safe-b))}
+#guide .gintro{font-size:14px;color:var(--muted);line-height:1.5;margin:0 4px 12px}
+.gsec{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.gsec summary{list-style:none;cursor:pointer;padding:14px 44px 14px 14px;font-weight:700;font-size:15.5px;position:relative}
+.gsec summary::-webkit-details-marker{display:none}
+.gsec summary::after{content:"";position:absolute;right:16px;top:50%;width:9px;height:9px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:transform .15s}
+.gsec[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.gbody{padding:0 14px 14px;font-size:14.5px;line-height:1.55}
+.gbody p{margin:0 0 8px} .gbody ul,.gbody ol{margin:0 0 8px;padding-left:20px} .gbody li{margin-bottom:6px}
+.gk{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 5px;border-radius:7px;background:var(--soft);font-weight:700;font-size:13px;vertical-align:middle;margin:0 1px}
+.gset{background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6}
+.glegend{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;align-items:center;margin:4px 0 10px;font-size:13.5px}
+.glegend .dchip{justify-self:start}
+.gtab{width:100%;border-collapse:collapse;font-size:13.5px}
+.gtab th{text-align:left;color:var(--muted);font-weight:600;padding:4px 6px 6px}
+.gtab td{padding:7px 6px;border-top:1px solid var(--soft);vertical-align:middle}
+.gtab td:first-child{font-weight:600;width:46%}
 .toast{position:fixed;left:50%;bottom:calc(150px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:86vw;text-align:center}
 .toast.show{opacity:1}
 .scrim:not(.hidden) ~ .toast{bottom:auto;top:calc(16px + env(safe-area-inset-top,0px))}
@@ -438,6 +459,90 @@ body.selecting .view{padding-top:56px}
   </div>
 </div>
 
+<div id="guide" class="hidden">
+  <div class="gtop"><button class="ib" id="gBack" aria-label="Đóng hướng dẫn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><b>Hướng dẫn sử dụng</b></div>
+  <div class="gscroll"><p class="gintro">Chạm vào từng mục để xem cách dùng. Mở lại hướng dẫn bất cứ lúc nào ở <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg> Cài đặt → Hướng dẫn sử dụng.</p><details class="gsec" open id="g-onoff"><summary>Bật / tắt nhanh ở đâu?</summary><div class="gbody"><table class="gtab"><tr><th>Muốn…</th><th>Ở đâu</th></tr>
+<tr><td>Hiện / ẩn giờ</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> trên thanh công cụ</td></tr>
+<tr><td>Chạm 1 lần là Xong luôn</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> → Khi chạm vào ô tích</td></tr>
+<tr><td>Việc xong không tự xuống dưới</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> → Việc đã xong → Giữ nguyên chỗ</td></tr>
+<tr><td>Đổi cỡ / màu chữ mặc định</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> → Kiểu chữ việc cha – con – cháu</td></tr>
+<tr><td>Đặt / bỏ thời hạn</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span> trên thanh công cụ</td></tr>
+<tr><td>Thu gọn việc con</td><td><span class="gk">▾</span> bên phải việc cha</td></tr>
+<tr><td>Xem việc theo hạn / trạng thái</td><td>Tab Việc làm → nút chọn phía trên</td></tr>
+<tr><td>Khôi phục ghi chú đã xoá</td><td><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> → Thùng rác</td></tr></table></div></details><details class="gsec" id="g-start"><summary>Bắt đầu nhanh</summary><div class="gbody">
+<p>App chạy <b>ngay trong điện thoại, không cần mạng</b>. Ghi chú chỉ lưu trong máy của bạn, không ai khác xem được.</p>
+<ol>
+<li><b>Cài như app thật:</b> mở link app bằng Chrome → bấm <span class="gk">⋮</span> → <b>Thêm vào màn hình chính</b>.</li>
+<li><b>Tạo mới:</b> bấm nút <span class="gk">+</span> màu xanh ở góc dưới → chọn <b>Ghi chú trống</b>, <b>Danh sách việc</b>, <b>Ghi bằng giọng nói</b> hoặc một <b>mẫu có sẵn</b>.</li>
+<li>App <b>tự lưu</b> khi bạn gõ, không cần bấm Lưu. Bấm <span class="gk">‹</span> để quay ra.</li>
+<li><b>Nhớ sao lưu</b> mỗi tuần (xem mục <i>Sao lưu &amp; an toàn dữ liệu</i>).</li>
+</ol></div></details><details class="gsec" id="g-check"><summary>Ô tích & trạng thái việc</summary><div class="gbody">
+<p>Biến một dòng thành việc cần làm: đặt con trỏ vào dòng → bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></span>.</p>
+<ul>
+<li>Chạm ô tích <b>1 lần</b> → <b>Đang làm</b> (ô cam). Chạm <b>lần 2</b> → <b>Xong</b> (ô xanh). Chạm ô đã xong → mở lại.</li>
+<li>Giờ <b>tạo, bắt đầu, xong</b> được ghi tự động theo thời gian thực.</li>
+<li>Việc xong <b>tự xuống cuối</b> danh sách theo đúng thứ tự lúc tạo; bỏ tích thì <b>về chỗ cũ</b>.</li>
+</ul>
+<div class="gset"><b>Bật / tắt:</b> <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → <i>Khi chạm vào ô tích</i>: “Chưa → Đang làm → Xong” hoặc “Chưa → Xong”.<br><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → <i>Việc đã xong</i>: “Tự chuyển xuống dưới” hoặc “Giữ nguyên chỗ”.</div></div></details><details class="gsec" id="g-tree"><summary>Việc con: cha – con – cháu</summary><div class="gbody">
+<p>Một việc lớn có thể chia thành việc con, việc cháu (tối đa 3 cấp), nối với nhau bằng đường kẻ dạng cây.</p>
+<ul>
+<li><b>Thụt vào</b> <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M21 6H11M21 12H11M21 18H11M4 9l3 3-3 3"/></svg></span> / <b>lùi ra</b> <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M21 6H11M21 12H11M21 18H11M7 9l-3 3 3 3"/></svg></span> trên thanh công cụ, hoặc <b>vuốt dòng sang phải / trái</b>.</li>
+<li><b>Enter</b> ở cuối việc cha → dòng mới là việc con đầu tiên. Enter ở dòng trống → lùi ra 1 cấp. Xoá lùi ở đầu dòng việc con → lùi ra.</li>
+<li>Nút <span class="gk">▾</span> bên phải việc cha để <b>thu gọn / mở</b> việc con. Việc cha ghi “1/3 việc con”.</li>
+<li>Có việc con bắt đầu → việc cha tự <b>Đang làm</b>; mọi việc con xong → việc cha <b>tự xong</b>. Tích xong việc cha khi còn việc con, app sẽ hỏi “Xong tất cả” hay “Chỉ việc cha”.</li>
+</ul></div></details><details class="gsec" id="g-drag"><summary>Sắp xếp bằng kéo thả</summary><div class="gbody">
+<ul>
+<li><b>Nhấn giữ ô tích</b> khoảng nửa giây (máy rung nhẹ) → kéo lên / xuống → thả tay.</li>
+<li>Vạch xanh cho biết chỗ sẽ thả. Kéo tới mép trên / dưới màn hình thì danh sách tự cuộn.</li>
+<li>Kéo việc cha thì <b>cả nhóm việc con đi theo</b>, giữ nguyên thứ tự.</li>
+<li>Ở ranh giới giữa hai nhóm: lệch tay sang phải để thành việc con của việc phía trên, sang trái để đứng ngang hàng.</li>
+</ul></div></details><details class="gsec" id="g-due"><summary>Thời hạn phải hoàn thành</summary><div class="gbody">
+<p>Tuỳ chọn cho từng việc — việc không đặt hạn vẫn như bình thường.</p>
+<ul>
+<li>Đặt con trỏ vào việc → bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span> → chọn <b>Ngày</b> (Hôm nay / Trong x ngày / chọn trên lịch) và <b>Giờ</b> (12:00, 22:00, Cuối ngày hoặc tự nhập) → <b>Lưu thời hạn</b>. Giờ tính theo giờ Việt Nam.</li>
+<li>Sửa hoặc <b>Bỏ thời hạn</b>: bấm lại <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span> trên việc đó.</li>
+<li>Đặt hạn cho nhiều việc: <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span> → <b>Chọn nhiều dòng</b> → chọn việc → <b>Thời hạn</b>.</li>
+</ul>
+<p><b>Màu nhãn</b> tự đổi theo mức gấp, đếm lùi cập nhật mỗi phút:</p>
+<div class="glegend"><span class="dchip" data-dl="far" style="margin-left:0">Hạn 20/11</span><span>còn hơn 3 ngày</span><span class="dchip" data-dl="soon" style="margin-left:0">Còn 2 ngày</span><span>còn 1–3 ngày</span><span class="dchip" data-dl="today" style="margin-left:0">Còn 6:53</span><span>dưới 24 giờ (giờ:phút)</span><span class="dchip" data-dl="urgent" style="margin-left:0">Còn 0:42</span><span>dưới 1 giờ</span><span class="dchip" data-dl="over" style="margin-left:0">Quá hạn 2:05</span><span>đã quá hạn</span><span class="dchip" data-dl="ontime" style="margin-left:0">Đúng hạn</span><span>xong trước hạn</span><span class="dchip" data-dl="late" style="margin-left:0">Trễ 1 ngày</span><span>xong sau hạn</span></div>
+<p>Trang chủ có ô <b>Quá hạn</b>, tab Việc làm có <b>chấm đỏ</b> báo số việc trễ. Lưu ý: app không gửi thông báo khi đang tắt.</p></div></details><details class="gsec" id="g-times"><summary>Hiện / ẩn giờ</summary><div class="gbody">
+<ul>
+<li>Mặc định giờ được <b>ẩn</b> cho gọn. Việc đang làm (không có hạn) hiện “Đã làm 25 phút”.</li>
+<li>Bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> trên thanh công cụ để <b>hiện / ẩn giờ của mọi việc</b>. App nhớ lựa chọn cho lần sau.</li>
+<li><b>Chạm vào nhãn</b> ở cuối một việc để xem đầy đủ: tạo, bắt đầu, xong, mất bao lâu.</li>
+</ul></div></details><details class="gsec" id="g-fmt"><summary>Định dạng chữ</summary><div class="gbody">
+<ul>
+<li><b>B</b> in đậm · <b>A+</b> chữ to hơn. Bôi đen đoạn chữ để áp dụng cho đoạn đó; không bôi đen thì A+ đổi cỡ <b>cả dòng</b>.</li>
+<li>Nút bút <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 21h8"/></svg></span> mở thêm: <b>A−</b>, tô màu vàng / xanh / hồng, chữ đỏ / xanh, nghiêng, gạch chân, gạch ngang, <b>Chèn giờ hiện tại</b>, <b>Bỏ định dạng</b>, và cỡ cả dòng (Nhỏ / Thường / Lớn / Tiêu đề).</li>
+<li><b>Tự động:</b> danh sách chỉ 1 cấp dùng chữ vừa; khi có việc con thì việc cha to, đậm, việc con nhỏ hơn.</li>
+</ul>
+<div class="gset"><b>Tuỳ chỉnh mặc định:</b> <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → <i>Kiểu chữ việc cha – con – cháu</i> (cỡ, đậm, màu cho từng cấp, có “Về mặc định”).</div></div></details><details class="gsec" id="g-voice"><summary>Nhập bằng giọng nói</summary><div class="gbody">
+<ul>
+<li>Bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span> xanh trên thanh công cụ → nói tiếng Việt → bấm <b>Dừng</b>. Chữ hiện ngay tại con trỏ. Cũng có micro ở ô tìm kiếm.</li>
+<li>Micro của app <b>cần có mạng</b>. Khi không có mạng, dùng <b>micro trên bàn phím</b> (Gboard, Laban Key) — luôn dùng được.</li>
+<li>Lần đầu, điện thoại sẽ hỏi quyền dùng micro → chọn <b>Cho phép</b>.</li>
+</ul></div></details><details class="gsec" id="g-select"><summary>Chọn nhiều & xoá an toàn</summary><div class="gbody">
+<ul>
+<li><b>Ghi chú:</b> nhấn giữ một thẻ, hoặc bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><rect x="3" y="3" width="7" height="7" rx="2"/><path d="M4.5 6.5l1.2 1.2 2.4-2.6M14 6.5h7M3 14h7v7H3zM14 17.5h7"/></svg></span> ở trang chủ → chạm để chọn thêm, <b>Chọn tất cả</b> → Ghim, Đổi màu, Sao chép, Xoá.</li>
+<li><b>Dòng việc:</b> trong ghi chú bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span> → <b>Chọn nhiều dòng</b> → Đã xong, Chưa làm, Thời hạn, Xoá. Chọn việc cha là chọn cả việc con.</li>
+<li>Mọi thao tác xoá đều <b>hỏi xác nhận</b>. Ghi chú bị xoá vào <b>Thùng rác 30 ngày</b> (<span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → Thùng rác) để khôi phục.</li>
+</ul></div></details><details class="gsec" id="g-tabs"><summary>Tab Việc làm & Nhật ký</summary><div class="gbody">
+<ul>
+<li><b>Việc làm:</b> gom mọi việc từ tất cả ghi chú. Xem <b>Theo thời hạn</b> (Quá hạn → Hôm nay → Sắp tới → Không có hạn) hoặc <b>Theo trạng thái</b>. Chạm ô tích ngay tại đây cũng được.</li>
+<li><b>Nhật ký:</b> xem theo từng ngày lúc nào tạo, bắt đầu, hoàn thành việc gì, mất bao lâu, đúng hạn hay trễ.</li>
+</ul></div></details><details class="gsec" id="g-misc"><summary>Ghim, màu, mẫu, chia sẻ</summary><div class="gbody">
+<ul>
+<li><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M9 3h6l-1 6 4 4H6l4-4-1-6zM12 13v8"/></svg></span> trong ghi chú để <b>ghim lên đầu</b> trang chủ.</li>
+<li><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span> trong ghi chú: <b>đổi màu</b>, <b>sao chép</b> để dán Zalo / Messenger, <b>chia sẻ</b>, <b>Lưu làm mẫu</b> (lần sau bấm <span class="gk">+</span> là có sẵn).</li>
+<li>Trang chủ có <b>tìm kiếm</b> và bộ lọc: Tất cả / Việc cần làm / Ghi chú / Đã xong.</li>
+</ul></div></details><details class="gsec" id="g-backup"><summary>Sao lưu & an toàn dữ liệu</summary><div class="gbody">
+<ul>
+<li><span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → <b>Gửi bản sao lưu lên Drive / Zalo</b> (nên chọn Google Drive) hoặc <b>Sao lưu ra file</b>. App nhắc nếu quá 7 ngày chưa sao lưu.</li>
+<li>Đổi máy / cài lại: <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span> Cài đặt → <b>Khôi phục từ file sao lưu</b> (gộp, không xoá ghi chú đang có).</li>
+<li><b>Không sao:</b> xoá lịch sử duyệt web, xoá bộ nhớ đệm, cập nhật Chrome.</li>
+<li><b>Sẽ mất dữ liệu:</b> xoá “Cookie và dữ liệu trang web” của Chrome, “Xoá dữ liệu” Chrome trong Cài đặt máy, khôi phục cài đặt gốc — vì vậy hãy sao lưu đều.</li>
+</ul></div></details></div>
+</div>
 <div class="scrim hidden" id="scrim"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="fileIn" accept=".json,application/json" class="hidden">
@@ -776,6 +881,7 @@ window.addEventListener("popstate", () => {
   if (top === "sheet") closeSheet(true);
   else if (top === "select") exitSel(true);
   else if (top === "edsel") exitEdSel(true);
+  else if (top === "guide") closeGuide(true);
   else if (top === "editor") closeEditor(true);
 });
 
@@ -814,6 +920,7 @@ function renderBanner(count){
   const days = Math.floor((Date.now() - (settings.lastBackup || settings.firstUse)) / DAY);
   $("backupBanner").innerHTML = count && days >= 7
     ? `<div class="banner"><span>${settings.lastBackup ? "Đã "+days+" ngày chưa sao lưu." : "Bạn chưa sao lưu lần nào."} Nên sao lưu để không mất ghi chú.</span><button id="bkNow">Sao lưu</button></div>` : "";
+  if (!settings.seenGuide && count) $("backupBanner").innerHTML += `<div class="banner" style="background:var(--accent-soft);color:var(--accent-text)"><span>Mới dùng app? Xem nhanh các tính năng hữu ích.</span><button data-guide="onoff">Xem hướng dẫn</button></div>`;
   const b = $("bkNow"); if (b) b.onclick = exportBackup;
 }
 
@@ -837,7 +944,7 @@ function renderNotes(all){
   if (!list.length){
     h = q ? `<div class="empty"><b>Không tìm thấy</b>Không có ghi chú nào chứa “${esc(q)}”.</div>`
       : all.length ? `<div class="empty"><b>Không có ghi chú nào ở mục này</b></div>`
-      : `<div class="empty"><b>Chưa có ghi chú nào</b>Bấm nút + ở góc dưới để viết ghi chú hoặc tạo danh sách việc đầu tiên.</div>`;
+      : `<div class="empty"><b>Chưa có ghi chú nào</b>Bấm nút + ở góc dưới để viết ghi chú hoặc tạo danh sách việc đầu tiên.<br><br><button class="btn pri" data-guide="start" style="display:inline-block;width:auto;padding:12px 20px">Xem hướng dẫn sử dụng</button></div>`;
   } else {
     if (pin.length) h += `<div class="sec">Đã ghim</div><div class="grid">${pin.map(card).join("")}</div>`;
     if (rest.length) h += (pin.length?`<div class="sec">Khác</div>`:"") + `<div class="grid">${rest.map(card).join("")}</div>`;
@@ -846,6 +953,7 @@ function renderNotes(all){
   if (selMode) renderSel();
 }
 let longFired = false, pressT = null;
+document.addEventListener("click", e => { const g = e.target.closest("[data-guide]"); if (g) openGuide(false, g.dataset.guide); });
 $("list").addEventListener("click", e => {
   const c = e.target.closest(".card"); if (!c) return;
   if (longFired){ longFired = false; return; }
@@ -1837,12 +1945,25 @@ function stopVoice(){
 keepSel($("voice"), stopVoice);
 $("qMic").onclick = () => recActive ? stopVoice() : startVoice("q");
 
+/* ================= user guide ================= */
+function openGuide(layerReady, section){
+  $("guide").classList.remove("hidden");
+  if (!layerReady) pushLayer("guide");
+  if (!settings.seenGuide){ settings.seenGuide = Date.now(); saveSet(); }
+  const sc = $("guide").querySelector(".gscroll"); sc.scrollTop = 0;
+  if (section){ const d = $("g-" + section); if (d){ d.open = true; setTimeout(() => d.scrollIntoView({block:"start"}), 50); } }
+  render();
+}
+function closeGuide(viaPop){ if ($("guide").classList.contains("hidden")) return; $("guide").classList.add("hidden"); if (!viaPop) popLayer("guide"); }
+$("gBack").onclick = () => closeGuide(false);
+
 /* ================= settings & backup ================= */
 $("btnSettings").onclick = () => {
   const trash = Object.entries(notes).filter(([,n]) => n.del);
   const cnt = liveNotes().length;
   openSheet(`<h4>Cài đặt & sao lưu</h4>
     <p>${cnt} ghi chú, lưu ngay trong điện thoại, không cần mạng.${persisted ? " Trình duyệt đã cho phép giữ dữ liệu lâu dài." : ""}<br>Sao lưu gần nhất: <b>${settings.lastBackup ? when(settings.lastBackup) : "chưa có"}</b></p>
+    <button class="opt" data-a="guide"><span class="ic" style="background:var(--accent);color:var(--accent-ink);font-weight:800">?</span><span>Hướng dẫn sử dụng<small>Các tính năng và cách bật / tắt</small></span></button>
     <button class="opt" data-a="export"><span class="ic" style="background:var(--accent-soft);color:var(--accent-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span>Sao lưu ra file<small>Lưu vào thư mục Tải xuống (Download)</small></span></button>
     <button class="opt" data-a="sharebk"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 18a5 5 0 0 1-.6-10A6 6 0 0 1 18 9a4 4 0 0 1-.5 9z"/></svg></span><span>Gửi bản sao lưu lên Drive / Zalo<small>Chọn Google Drive để cất an toàn</small></span></button>
     <button class="opt" data-a="import"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg></span><span>Khôi phục từ file sao lưu<small>Gộp với ghi chú hiện có, không xoá gì</small></span></button>
@@ -1853,6 +1974,7 @@ $("btnSettings").onclick = () => {
     <div class="sec">Việc đã xong</div>
     <div class="toggle"><button data-a="sink1" class="${settings.sink?"on":""}">Tự chuyển xuống dưới</button><button data-a="sink0" class="${!settings.sink?"on":""}">Giữ nguyên chỗ</button></div>`,
   a => {
+    if (a==="guide"){ sheetToLayer("guide"); openGuide(true); return; }
     if (a==="export") exportBackup();
     else if (a==="sharebk") shareBackup();
     else if (a==="import") $("fileIn").click();
