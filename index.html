@@ -497,7 +497,7 @@ body.selecting .view{padding-top:56px}
 <li>Kéo việc cha thì <b>cả nhóm việc con đi theo</b>, giữ nguyên thứ tự.</li>
 <li>Ở ranh giới giữa hai nhóm: lệch tay sang phải để thành việc con của việc phía trên, sang trái để đứng ngang hàng.</li>
 </ul></div></details><details class="gsec" id="g-due"><summary>Thời hạn phải hoàn thành</summary><div class="gbody">
-<p>Tuỳ chọn cho từng việc — việc không đặt hạn vẫn như bình thường.</p>
+<p>Tuỳ chọn cho từng việc — việc không đặt hạn vẫn như bình thường.</p><p><b>Tự xếp theo hạn:</b> việc có hạn gần nhất tự nhảy lên đầu (quá hạn lên trước), việc không có hạn nằm dưới, việc đã xong xuống cuối. Đặt, sửa hay bỏ hạn đều tự xếp lại. Tắt ở Cài đặt → Việc có thời hạn.</p>
 <ul>
 <li>Đặt con trỏ vào việc → bấm <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span> → chọn <b>Ngày</b> (Hôm nay / Trong x ngày / chọn trên lịch) và <b>Giờ</b> (12:00, 22:00, Cuối ngày hoặc tự nhập) → <b>Lưu thời hạn</b>. Giờ tính theo giờ Việt Nam.</li>
 <li>Sửa hoặc <b>Bỏ thời hạn</b>: bấm lại <span class="gk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span> trên việc đó.</li>
@@ -572,6 +572,7 @@ if (!Array.isArray(settings.lv) || settings.lv.length !== 3) settings.lv = JSON.
 const FLAT_DEF = {size:16,bold:false,color:"ink"};
 if (!settings.flat) settings.flat = Object.assign({}, FLAT_DEF);
 if (settings.sink === undefined) settings.sink = true;
+if (settings.dueTop === undefined) settings.dueTop = true;   // việc có hạn gần nhất tự lên đầu
 const LV_NAMES = ["Việc cha","Việc con","Việc cháu"];
 const LV_SIZES = [[14,"Nhỏ"],[16,"Vừa"],[18,"Lớn"],[21,"Rất lớn"]];
 const LV_COLORS = [["ink","Đen"],["ink2","Xám đậm"],["muted","Xám"],["c-blue","Xanh dương"],["accent-text","Xanh lá"],["doing-text","Nâu cam"]];
@@ -730,12 +731,17 @@ function sortRun(run){
   const base = Math.min(...run.map(lv)), groups = [];
   run.forEach(r => { if (lv(r) === base || !groups.length) groups.push([r]); else groups[groups.length-1].push(r); });
   groups.forEach(g => { if (g.length > 1){ const sub = sortRun(g.slice(1)); g.splice(1, g.length-1, ...sub); } });
-  const done = g => g[0].dataset.s === "done" ? 1 : 0;
-  groups.sort((a, b) => done(a) - done(b) || (+a[0].dataset.o||0) - (+b[0].dataset.o||0));
+  /* thứ tự: (1) việc chưa xong trước, đã xong xuống dưới  (2) việc có hạn trước, hạn gần nhất lên đầu  (3) còn lại giữ chỗ gốc (data-o) */
+  const sinkOn = !!settings.sink, dueOn = settings.dueTop !== false;
+  const key = g => {
+    const el = g[0], fin = el.dataset.s === "done", due = (dueOn && !fin) ? (+el.dataset.due || 0) : 0;
+    return [sinkOn && fin ? 1 : 0, due ? 0 : 1, due, +el.dataset.o || 0];
+  };
+  groups.sort((a, b) => { const A = key(a), B = key(b); for (let i = 0; i < 4; i++) if (A[i] !== B[i]) return A[i] - B[i]; return 0; });
   return groups.flat();
 }
 function sinkDone(container){
-  if (!settings.sink || !container) return false;
+  if (!(settings.sink || settings.dueTop !== false) || !container) return false;
   const rows = [...container.children], out = [];
   for (let i = 0; i < rows.length;){
     if (!isCk(rows[i])){ out.push(rows[i]); i++; continue; }
@@ -1167,6 +1173,7 @@ function openEditor(id){
   $("title").value = n.title;
   ed.innerHTML = sanitize(n.html) || "<div><br></div>";
   normalizeTop();
+  fixItems(); sortByDue();
   refreshMeta(true);
   lastSnap = n.title + "\u0000" + n.html;
   $("editor").dataset.c = n.color;
@@ -1655,13 +1662,13 @@ function openDueSheet(targets, fromSel){
     else if (a === "ttyped"){ st.tmode = "typed"; }
     else if (a === "dremove"){
       targets.forEach(x => { delete x.dataset.due; delete x.dataset.dl; });
-      afterDue(fromSel); toast("Đã bỏ thời hạn"); return;
+      const mv = afterDue(fromSel, targets); toast("Đã bỏ thời hạn" + (mv ? " · về chỗ cũ" : "")); return;
     }
     else if (a === "dsave"){
       const ts = dueTs();
       if (ts === null){ toast(st.dmode === "cal" && !st.cal ? "Hãy chọn một ngày trên lịch" : "Giờ hoặc số ngày chưa hợp lệ"); return true; }
       targets.forEach(x => { x.dataset.due = ts; });
-      afterDue(fromSel); toast("Hạn: " + vnLabel(ts)); return;
+      const mv = afterDue(fromSel, targets); toast("Hạn: " + vnLabel(ts) + (mv ? " · đã xếp theo hạn" : "")); return;
     }
     else if (a === "x") return;
     paint(); return true;
@@ -1714,9 +1721,22 @@ function openDueSheet(targets, fromSel){
   }
   paint();
 }
-function afterDue(fromSel){
+function afterDue(fromSel, targets){
   if (fromSel){ ed.querySelectorAll(".picked").forEach(x => x.classList.remove("picked")); renderEdSel(); }
-  afterEdit(); flush();
+  afterEdit();
+  const moved = sortByDue();
+  flush();
+  if (moved && targets && targets[0] && targets[0].isConnected) try{ targets[0].scrollIntoView({block:"nearest", behavior:"smooth"}); }catch(e){}
+  return moved;
+}
+/* hạn gần nhất tự nhảy lên đầu — gọi khi tạo / đổi / bỏ hạn và khi mở ghi chú */
+function sortByDue(){
+  if (!cur || settings.dueTop === false && !settings.sink) return false;
+  const rows = [...ed.children].filter(r => r.tagName === "DIV");
+  ensureOrder(rows);
+  const moved = sinkDone(ed);
+  if (moved){ markTree([...ed.children]); scheduleTree(); }
+  return moved;
 }
 
 function cycleLive(b){
@@ -1971,6 +1991,8 @@ $("btnSettings").onclick = () => {
     <button class="opt" data-a="trash"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><span>Thùng rác (${trash.length})</span></button>
     <div class="sec">Khi chạm vào ô tích</div>
     <div class="toggle"><button data-a="tap3" class="${settings.tap!==2?"on":""}">Chưa → Đang làm → Xong</button><button data-a="tap2" class="${settings.tap===2?"on":""}">Chưa → Xong</button></div>
+    <div class="sec">Việc có thời hạn</div>
+    <div class="toggle"><button data-a="due1" class="${settings.dueTop!==false?"on":""}">Hạn gần nhất lên đầu</button><button data-a="due0" class="${settings.dueTop===false?"on":""}">Giữ nguyên chỗ</button></div>
     <div class="sec">Việc đã xong</div>
     <div class="toggle"><button data-a="sink1" class="${settings.sink?"on":""}">Tự chuyển xuống dưới</button><button data-a="sink0" class="${!settings.sink?"on":""}">Giữ nguyên chỗ</button></div>`,
   a => {
@@ -1980,6 +2002,7 @@ $("btnSettings").onclick = () => {
     else if (a==="import") $("fileIn").click();
     else if (a==="trash") { openTrash(); return true; }
     else if (a==="lvstyle") { openLvSheet(); return true; }
+    else if (a==="due1" || a==="due0"){ settings.dueTop = a==="due1"; saveSet(); toast("Đã đổi"); $("btnSettings").onclick(); return true; }
     else if (a==="sink1" || a==="sink0"){ settings.sink = a==="sink1"; saveSet(); toast("Đã đổi"); $("btnSettings").onclick(); return true; }
     else if (a==="tap3" || a==="tap2"){ settings.tap = a==="tap2" ? 2 : 3; saveSet(); toast("Đã đổi"); $("btnSettings").onclick(); return true; }
   });
